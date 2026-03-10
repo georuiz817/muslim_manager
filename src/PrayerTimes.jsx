@@ -315,20 +315,6 @@ function PrayerTimes() {
 
 
 
-          <div className="prayer-summary-card">
-            <div className="prayer-summary-header">
-              <div>
-                <p className="prayer-summary-title">🕌 Today&apos;s Prayer Times</p>
-                <p className="prayer-summary-hijri">{hijriDisplay}</p>
-              </div>
-              <div className="prayer-summary-right">
-                <p className="prayer-summary-next">{nextSummaryLabel}</p>
-                <button type="button" className="qibla-button" >
-                  Qibla → <span className="qibla-icon">🧭</span>
-                </button>
-              </div>
-            </div>
-          </div>
 
           <div className="prayer-list">
             {loading && <p className="prayer-status">Loading prayer times…</p>}
