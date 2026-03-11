@@ -55,7 +55,7 @@
 .hero--compact {
   min-height: auto;
   padding-top: 4.5rem;
-  padding-bottom: 1.5rem;
+  padding-bottom: 0;
 }
 
 .nav {

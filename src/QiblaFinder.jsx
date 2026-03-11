@@ -1,5 +1,5 @@
 import { useState } from "react"
-import logoNav from './images/logoNav.png'
+import logoNav from './images/white_moon_icon.png'
 import homeIcon from './images/freeiconVector.webp'
 
 

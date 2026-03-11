@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import homeIcon from './images/freeiconVector.webp'
-import logoNav from './images/logoNav.png'
+import logoNav from './images/white_moon_icon.png'
 
 function ZakatCalc() {
   // Asset state variables

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 import homeIcon from './images/freeiconVector.webp'
-import logoNav from './images/logoNav.png'
+import logoNav from './images/white_moon_icon.png'
 
 
 const FORCE_RAMADAN = true // 🔧 dev-only: set false in production
