@@ -57,14 +57,12 @@ function ZakatCalc() {
   return (
     <div className="page">
       <header className="hero hero--compact" id="top">
-        {/* New nav code borrowed from App.jsx (8-30) */}
         <nav className="nav">
           <div className="nav-inner">
             <div className="nav-logo">
               <img
                 src={logoNav}
                 alt="Muslim Manager logo"
-                style={{ height: 38, maxHeight: 50, verticalAlign: "middle" }}
               />
             </div>
             <ul className="nav-links">
@@ -73,40 +71,37 @@ function ZakatCalc() {
                   <img
                     src={homeIcon}
                     alt="Home"
-                    style={{ height: 25, maxHeight: 30, verticalAlign: "middle" }}
                   />
                 </a>
               </li>
-              {/* Future nav links go here */}
             </ul>
           </div>
         </nav>
 
         <div className="hero-content">
           <p className="hero-tagline">Zakat Calculator</p>
-          <h1 className="hero-title">Zakat Calculation, Simplified.</h1>
+          <h1 className="hero-title">See you'r price</h1>
         </div>
       </header>
 
-      <main style={{ maxWidth: 480, margin: "0 auto", marginTop: 0 }}>
-        <section className="prayer-section" style={{ padding: 0, marginTop: 0 }}>
+      <main className="zakat-main">
+        <section className="prayer-section zakat-section">
           {/* Inputs Card */}
-          <div className="prayer-summary-card" style={{ marginTop: 0, marginBottom: 16 }}>
-            <div className="prayer-summary-header" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 12 }}>
+          <div className="prayer-summary-card zakat-input-card">
+            <div className="prayer-summary-header zakat-header-column">
               <div>
-                <p className="prayer-summary-title" style={{ marginBottom: 8 }}>Enter Your Amounts</p>
-                <table style={{ width: '100%', border: 0, background: 'none', margin: 0 }}>
+                <p className="prayer-summary-title">Enter Your Amounts</p>
+                <table className="zakat-table">
                   <tbody>
                     {/* Zakatable Assets */}
                     <tr>
                       <td>
                         <label className="prayer-summary-hijri" htmlFor="cash">Cash &amp; Savings</label>
                       </td>
-                      <td style={{ textAlign: 'right' }}>
+                      <td>
                         <input
                           id="cash"
-                          className="method-select"
-                          style={{ width: 110 }}
+                          className="method-select zakat-input"
                           type="number"
                           min="0"
                           inputMode="decimal"
@@ -120,11 +115,10 @@ function ZakatCalc() {
                       <td>
                         <label className="prayer-summary-hijri" htmlFor="gold">Gold value</label>
                       </td>
-                      <td style={{ textAlign: 'right' }}>
+                      <td>
                         <input
                           id="gold"
-                          className="method-select"
-                          style={{ width: 110 }}
+                          className="method-select zakat-input"
                           type="number"
                           min="0"
                           inputMode="decimal"
@@ -138,11 +132,10 @@ function ZakatCalc() {
                       <td>
                         <label className="prayer-summary-hijri" htmlFor="silver">Silver value</label>
                       </td>
-                      <td style={{ textAlign: 'right' }}>
+                      <td>
                         <input
                           id="silver"
-                          className="method-select"
-                          style={{ width: 110 }}
+                          className="method-select zakat-input"
                           type="number"
                           min="0"
                           inputMode="decimal"
@@ -156,11 +149,10 @@ function ZakatCalc() {
                       <td>
                         <label className="prayer-summary-hijri" htmlFor="investments">Investments / Business assets</label>
                       </td>
-                      <td style={{ textAlign: 'right' }}>
+                      <td>
                         <input
                           id="investments"
-                          className="method-select"
-                          style={{ width: 110 }}
+                          className="method-select zakat-input"
                           type="number"
                           min="0"
                           inputMode="decimal"
@@ -174,11 +166,10 @@ function ZakatCalc() {
                       <td>
                         <label className="prayer-summary-hijri" htmlFor="otherAssets">Other zakatable assets</label>
                       </td>
-                      <td style={{ textAlign: 'right' }}>
+                      <td>
                         <input
                           id="otherAssets"
-                          className="method-select"
-                          style={{ width: 110 }}
+                          className="method-select zakat-input"
                           type="number"
                           min="0"
                           inputMode="decimal"
@@ -194,11 +185,10 @@ function ZakatCalc() {
                       <td>
                         <label className="prayer-summary-hijri" htmlFor="liabilities">Minus: Short-term debts / bills</label>
                       </td>
-                      <td style={{ textAlign: 'right' }}>
+                      <td>
                         <input
                           id="liabilities"
-                          className="method-select"
-                          style={{ width: 110 }}
+                          className="method-select zakat-input"
                           type="number"
                           min="0"
                           inputMode="decimal"
@@ -213,32 +203,31 @@ function ZakatCalc() {
               </div>
 
               {/* Nisab selection */}
-              <div style={{ marginTop: 16 }}>
-                <span className="prayer-summary-hijri" style={{ fontWeight: 600, marginRight: 8 }}>Nisab:</span>
-                <label style={{ marginRight: 13 }}>
+              <div className="zakat-nisab-section">
+                <span className="prayer-summary-hijri zakat-nisab-label">Nisab:</span>
+                <label className="zakat-radio-label">
                   <input
                     type="radio"
                     name="nisabType"
                     value="gold"
                     checked={nisabType === 'gold'}
                     onChange={() => setNisabType('gold')}
-                    style={{ marginRight: 4 }}
+                    className="zakat-radio-input"
                   />Gold (85g)
                 </label>
-                <label style={{ marginRight: 13 }}>
+                <label className="zakat-radio-label">
                   <input
                     type="radio"
                     name="nisabType"
                     value="silver"
                     checked={nisabType === 'silver'}
                     onChange={() => setNisabType('silver')}
-                    style={{ marginRight: 4 }}
+                    className="zakat-radio-input"
                   />Silver (595g)
                 </label>
-                <span style={{ marginLeft: 16 }}>
+                <span className="zakat-manual-section">
                   <input
-                    className="method-select"
-                    style={{ width: 85 }}
+                    className="method-select zakat-manual-input"
                     type="number"
                     min="0"
                     inputMode="decimal"
@@ -246,60 +235,58 @@ function ZakatCalc() {
                     onChange={e => setNisabValue(e.target.value)}
                     placeholder={nisabType === 'gold' ? defaultNisabGold : defaultNisabSilver}
                   />
-                  <span className="prayer-summary-hijri" style={{ marginLeft: 4, fontSize: 13, color: "#666" }}>Manual amount</span>
+                  <span className="prayer-summary-hijri zakat-manual-hint">Manual amount</span>
                 </span>
               </div>
             </div>
           </div>
 
           {/* Output card */}
-          <div className="prayer-summary-card" style={{ marginTop: 0 }}>
-            <div className="prayer-summary-header" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 10 }}>
+          <div className="prayer-summary-card zakat-output-card">
+            <div className="prayer-summary-header zakat-header-column">
               <div>
-                <p className="prayer-summary-title" style={{ marginBottom: 7 }}>Results</p>
+                <p className="prayer-summary-title zakat-results-title">Results</p>
               </div>
               <div>
-                <table style={{ width: '100%', background: 'none', border: 0, margin: 0 }}>
+                <table className="zakat-results-table">
                   <tbody>
                     <tr>
                       <td className="prayer-summary-hijri">Total Assets</td>
-                      <td style={{ textAlign: 'right', fontWeight: 600 }}>{ totalAssets.toLocaleString(undefined, {maximumFractionDigits:2}) }</td>
+                      <td>{ totalAssets.toLocaleString(undefined, {maximumFractionDigits:2}) }</td>
                     </tr>
                     <tr>
                       <td className="prayer-summary-hijri">Less: Liabilities</td>
-                      <td style={{ textAlign: 'right', fontWeight: 600 }}>{ totalLiabilities.toLocaleString(undefined, {maximumFractionDigits:2}) }</td>
+                      <td>{ totalLiabilities.toLocaleString(undefined, {maximumFractionDigits:2}) }</td>
                     </tr>
-                    <tr>
-                      <td className="prayer-summary-hijri" style={{ fontWeight: 700, color: "#222" }}>Net Zakatable Assets</td>
-                      <td style={{ textAlign: 'right', fontWeight: 700, color: "#222" }}>{ netAssets.toLocaleString(undefined, {maximumFractionDigits:2}) }</td>
+                    <tr className="zakat-net-assets">
+                      <td className="prayer-summary-hijri">Net Zakatable Assets</td>
+                      <td>{ netAssets.toLocaleString(undefined, {maximumFractionDigits:2}) }</td>
                     </tr>
                     <tr>
                       <td className="prayer-summary-hijri">Nisab threshold</td>
-                      <td style={{ textAlign: 'right' }}>
-                        { nisab.toLocaleString(undefined, {maximumFractionDigits:2}) }
-                      </td>
+                      <td>{ nisab.toLocaleString(undefined, {maximumFractionDigits:2}) }</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
-              <div style={{ marginTop: 12 }}>
+              <div className="zakat-result-section">
                 { !validCalculation ? (
-                  <span className="prayer-extra" style={{ color: '#a33', fontWeight: 500 }}>
+                  <span className="prayer-extra zakat-error-message">
                     Please check your entries.
                   </span>
                 ) : !zakatOwed ? (
-                  <span className="prayer-extra" style={{ color: '#999', fontWeight: 500 }}>
+                  <span className="prayer-extra zakat-not-due-message">
                     Zakat is not due (below nisab).
                   </span>
                 ) : (
                   <div>
-                    <span className="prayer-extra" style={{ color: '#057446', fontWeight: 600 }}>
+                    <span className="prayer-extra zakat-due-message">
                       Zakat due:{" "}
-                      <span style={{ color: '#28bc8d', fontWeight: 700, fontSize: 22 }}>
+                      <span className="zakat-due-amount">
                         { zakatDue.toLocaleString(undefined, { maximumFractionDigits: 2 }) }
                       </span>
                     </span>
-                    <div className="prayer-extra" style={{ color: "#062", fontSize: 14, marginTop: 5 }}>
+                    <div className="prayer-extra zakat-note">
                       (2.5% of your eligible assets)
                     </div>
                   </div>
@@ -315,4 +302,3 @@ function ZakatCalc() {
 }
 
 export default ZakatCalc
-

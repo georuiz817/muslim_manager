@@ -231,8 +231,9 @@
   margin: 0 auto 0.8rem;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.9rem;
-}
+  gap: 1rem;
+  margin-bottom: 2rem;
+ }
 
 .method-group {
   flex: 1 1 180px;
@@ -484,11 +485,8 @@
 
 /* Ramadan banner */
 .ramadan-banner {
-  background: #f7efd8;
-  color: #7d5c15;
-  margin-bottom: 18px;
-  border-left: 5px solid #d6b402;
-}
+   margin-bottom: 18px;
+ }
 
 .ramadan-banner-content {
   display: flex;
@@ -523,8 +521,7 @@
 }
 
 .ramadan-banner-status .prayer-status {
-  color: #7d5c15;
-  font-weight: 500;
+   font-weight: 500;
 }
 
 .ramadan-banner-status .prayer-status strong {
@@ -557,4 +554,163 @@
 .prayer-extra {
   margin: 0.7rem 0 0;
   font-size: 0.85rem;
+}
+
+
+
+
+
+
+/* Add these to your existing app.css */
+
+/* Zakat Calculator specific styles */
+.zakat-main {
+  max-width: 480px;
+  margin: 0 auto;
+  margin-top: 0;
+}
+
+.zakat-section {
+  padding: 0;
+  margin-top: 0;
+}
+
+.zakat-input-card {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.zakat-output-card {
+  margin-top: 0;
+}
+
+.zakat-header-column {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.zakat-header-column .prayer-summary-title {
+  margin-bottom: 8px;
+}
+
+.zakat-table {
+  width: 100%;
+  border: 0;
+  background: none;
+  margin: 0;
+}
+
+.zakat-table td {
+  padding: 4px 0;
+}
+
+.zakat-table td:last-child {
+  text-align: right;
+}
+
+.zakat-input {
+  width: 110px;
+}
+
+.zakat-nisab-section {
+  margin-top: 16px;
+}
+
+.zakat-nisab-label {
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.zakat-radio-label {
+  margin-right: 13px;
+}
+
+.zakat-radio-input {
+  margin-right: 4px;
+}
+
+.zakat-manual-section {
+  margin-left: 16px;
+}
+
+.zakat-manual-input {
+  width: 85px;
+}
+
+.zakat-manual-hint {
+  margin-left: 4px;
+  font-size: 13px;
+  color: #666;
+}
+
+.zakat-results-title {
+  margin-bottom: 7px;
+}
+
+.zakat-results-table {
+  width: 100%;
+  background: none;
+  border: 0;
+  margin: 0;
+}
+
+.zakat-results-table td {
+  padding: 4px 0;
+}
+
+.zakat-results-table td:first-child {
+  color: rgba(226, 232, 240, 0.78);
+}
+
+.zakat-results-table td:last-child {
+  text-align: right;
+  font-weight: 600;
+}
+
+.zakat-net-assets {
+  font-weight: 700;
+  color: #222;
+}
+
+.zakat-net-assets td:first-child {
+  font-weight: 700;
+  color: #222;
+}
+
+.zakat-result-section {
+  margin-top: 12px;
+}
+
+.zakat-error-message {
+  color: #a33;
+  font-weight: 500;
+}
+
+.zakat-not-due-message {
+  color: #999;
+  font-weight: 500;
+}
+
+.zakat-due-message {
+  color: #057446;
+  font-weight: 600;
+}
+
+.zakat-due-amount {
+  color: #28bc8d;
+  font-weight: 700;
+  font-size: 22px;
+}
+
+.zakat-note {
+  color: #062;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+/* Override prayer-summary-hijri when used in zakat context */
+.zakat-table .prayer-summary-hijri,
+.zakat-results-table .prayer-summary-hijri {
+  color: rgba(226, 232, 240, 0.78);
 }

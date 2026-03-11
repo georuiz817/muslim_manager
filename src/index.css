@@ -9,12 +9,28 @@
   scroll-behavior: smooth;
 }
 
-body {
+html, body {
   margin: 0;
-  min-width: 320px;
+  padding: 0;
+  width: 100%;
   min-height: 100vh;
+  background: #0b3d2e; /* Match your page background */
 }
+
+body {
+  /* This ensures content fills the whole screen including under nav bars */
+  min-height: 100vh;
+  background: transparent;
+  min-width: 320px;
+
+}
+
+
 
 button {
   font-family: inherit;
 }
+
+
+/* Add to your existing app.css at the bottom */
+ 
