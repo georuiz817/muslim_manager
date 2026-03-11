@@ -3,11 +3,7 @@ import './App.css'
 import homeIcon from './images/freeiconVector.webp'
 import logoNav from './images/white_moon_icon.png'
 
-
 const FORCE_RAMADAN = true // 🔧 dev-only: set false in production
-
-
-
 
 const METHODS = [
   { id: 3, label: 'Muslim World League' },
@@ -20,7 +16,7 @@ const METHODS = [
 ]
 
 const ASR_SCHOOLS = [
-  { id: 0, label: 'Standard (Shafii)' },
+  { id: 0, label: 'Standard (Shafi\'i)' },
   { id: 1, label: 'Hanafi juristic' },
 ]
 
@@ -38,8 +34,8 @@ function formatCountdown(from, to) {
 }
 
 function PrayerTimes() {
-  const [methodId, setMethodId] = useState(3) // Muslim World League default
-  const [asrSchool, setAsrSchool] = useState(0) // Standard
+  const [methodId, setMethodId] = useState(3)
+  const [asrSchool, setAsrSchool] = useState(0)
   const [now, setNow] = useState(() => new Date())
   const [coords, setCoords] = useState(null)
   const [timings, setTimings] = useState(null)
@@ -56,7 +52,7 @@ function PrayerTimes() {
   // Try to get user coordinates once
   useEffect(() => {
     if (!('geolocation' in navigator)) {
-      setCoords({ lat: 21.4225, lon: 39.8262 }) // Fallback to Makkah
+      setCoords({ lat: 21.4225, lon: 39.8262 })
       return
     }
 
@@ -68,7 +64,7 @@ function PrayerTimes() {
         })
       },
       () => {
-        setCoords({ lat: 21.4225, lon: 39.8262 }) // Fallback to Makkah
+        setCoords({ lat: 21.4225, lon: 39.8262 })
       },
       { enableHighAccuracy: true, timeout: 10000 },
     )
@@ -98,7 +94,8 @@ function PrayerTimes() {
           hijri.month = { ...hijri.month, number: 9, en: 'Ramadan' }
         }
         
-        setHijriInfo(hijri)      } catch (err) {
+        setHijriInfo(hijri)
+      } catch (err) {
         setError(err.message || 'Unable to load prayer times right now.')
       } finally {
         setLoading(false)
@@ -109,7 +106,6 @@ function PrayerTimes() {
   }, [coords, methodId, asrSchool])
 
   // --- Ramadan logic helpers ---
-  // Is today Ramadan? (Hijri month 9 is Ramadan)
   const isRamadan = hijriInfo && hijriInfo.month && Number(hijriInfo.month.number) === 9
 
   // For quick lookup of specific prayer times by name
@@ -128,7 +124,6 @@ function PrayerTimes() {
     return map
   }, [timings])
 
-  // Ramadan suhoor (Fajr) and iftar (Maghrib) times
   const fajrTime = prayerTimesByName['Fajr']
   const maghribTime = prayerTimesByName['Maghrib']
 
@@ -137,11 +132,9 @@ function PrayerTimes() {
   let ramadanFastCountdown = null
   if (isRamadan && fajrTime && maghribTime) {
     if (now < fajrTime) {
-      // Before suhoor ends
       ramadanFastStatus = "Fasting begins in"
       ramadanFastCountdown = formatCountdown(now, fajrTime)
     } else if (now >= fajrTime && now < maghribTime) {
-      // Fasting in progress
       ramadanFastStatus = "Iftar in"
       ramadanFastCountdown = formatCountdown(now, maghribTime)
     } else if (now >= maghribTime) {
@@ -177,7 +170,6 @@ function PrayerTimes() {
     if (!parsedPrayers.length) return []
     const upcoming = parsedPrayers.filter((p) => p.at > now)
     const past = parsedPrayers.filter((p) => p.at <= now)
-    // Show upcoming first (soonest to latest), then past (most recent first)
     return [...upcoming, ...past.reverse()]
   }, [parsedPrayers, now])
 
@@ -189,7 +181,7 @@ function PrayerTimes() {
     ? 'Loading next prayer...'
     : !nextPrayer || nextCountdown === 'Passed'
     ? 'All prayers for today completed.'
-    : `Next: ${nextPrayer.name} in ${nextCountdown || ''}`
+    : `Next: ${nextPrayer.name} in ${nextCountdown || ''}`
 
   return (
     <div className="page">
@@ -200,7 +192,6 @@ function PrayerTimes() {
               <img
                 src={logoNav}
                 alt="Muslim Manager logo"
-                style={{ height: 38, maxHeight: 50, verticalAlign: "middle" }}
               />
             </div>
             <ul className="nav-links">
@@ -209,11 +200,9 @@ function PrayerTimes() {
                   <img
                     src={homeIcon}
                     alt="Home"
-                    style={{ height: 25, maxHeight: 30, verticalAlign: "middle" }}
                   />
                 </a>
               </li>
-              {/* Future nav links go here */}
             </ul>
           </div>
         </nav>
@@ -226,8 +215,6 @@ function PrayerTimes() {
 
       <main>
         <section className="prayer-section">
- 
-
           <div className="method-row">
             <div className="method-group">
               <label className="method-label" htmlFor="method-select">
@@ -265,25 +252,17 @@ function PrayerTimes() {
             </div>
           </div>
 
-
-   {/* --- Ramadan banner if active --- */}
-   {isRamadan && (
-            <div className="prayer-summary-card" style={{ background: '#f7efd8', color: '#7d5c15', marginBottom: 18, borderLeft: '5px solid #d6b402' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <span style={{ fontSize: 22, fontWeight: 700 }}>
+          {/* --- Ramadan banner if active --- */}
+          {isRamadan && (
+            <div className="prayer-summary-card ramadan-banner">
+              <div className="ramadan-banner-content">
+                <span className="ramadan-banner-title">
                   🌙 Ramadan Mubarak
                 </span>
-                <span style={{ fontSize: 15 }}>
+                <span className="ramadan-banner-date">
                   {hijriDisplay}
                 </span>
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  gap: 18,
-                  flexWrap: 'wrap',
-                  marginTop: 3,
-                  marginBottom: 3
-                }}>
+                <div className="ramadan-banner-times">
                   <div>
                     <strong>Fast Start (Suhoor ends):</strong> {fajrTime ? fajrTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "--"}
                   </div>
@@ -291,17 +270,15 @@ function PrayerTimes() {
                     <strong>Fast Break (Iftar):</strong> {maghribTime ? maghribTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "--"}
                   </div>
                 </div>
-                {/* Ramadan fasting countdown logic */}
-                <div style={{ marginTop: 2 }}>
+                <div className="ramadan-banner-status">
                   {ramadanFastStatus && (
-                    <span className="prayer-status" style={{ color: '#7d5c15', fontWeight: 500 }}>
+                    <span className="prayer-status">
                       {ramadanFastStatus}
-                      {ramadanFastCountdown && <> <span style={{ fontWeight: 700 }}>{ramadanFastCountdown}</span></>}
+                      {ramadanFastCountdown && <> <strong>{ramadanFastCountdown}</strong></>}
                     </span>
                   )}
-                  {/* Fasting completed message? */}
                   {isRamadan && fajrTime && maghribTime && now >= maghribTime && (
-                    <span className="prayer-status" style={{ color: '#7d5c15', fontWeight: 500 }}>
+                    <span className="prayer-status">
                       Fasting completed for today
                     </span>
                   )}
@@ -309,12 +286,6 @@ function PrayerTimes() {
               </div>
             </div>
           )}
-
-
-
-
-
-
 
           <div className="prayer-list">
             {loading && <p className="prayer-status">Loading prayer times…</p>}
@@ -325,34 +296,32 @@ function PrayerTimes() {
               orderedForDisplay.map((p) => {
                 const countdown = formatCountdown(now, p.at)
 
-                // -- Enhanced prayer list Ramadan logic: add Ramadan labels under Fajr, Maghrib, and Isha --
                 let ramadanExtra = null;
                 if (isRamadan) {
                   if (p.name === 'Fajr') {
-                    ramadanExtra = <span className="prayer-extra" style={{  fontWeight: 500, fontSize: 14, display: 'block', marginTop: 2 }}>🕊️ Start of fasting</span>
+                    ramadanExtra = <span className="prayer-extra-ramadan-fajr">🕊️ Start of fasting</span>
                   } else if (p.name === 'Maghrib') {
-                    ramadanExtra = <span className="prayer-extra" style={{   fontWeight: 500, fontSize: 14, display: 'block', marginTop: 2 }}>🍽️ Time to break fast (Iftar)</span>
+                    ramadanExtra = <span className="prayer-extra-ramadan-maghrib">🍽️ Time to break fast (Iftar)</span>
                   } else if (p.name === 'Isha') {
-                    ramadanExtra = <span className="prayer-extra" style={{ fontWeight: 500, fontSize: 14, display: 'block', marginTop: 2 }}>🌙 Taraweeh prayer after Isha</span>
+                    ramadanExtra = <span className="prayer-extra-ramadan-isha">🌙 Taraweeh prayer after Isha</span>
                   }
                 }
 
                 const extra =
-  p.name === 'Sunrise'
-    ? '🌅 Not obligatory'
-    : p.name === 'Fajr'
-    ? isRamadan
-      ? 'Remember to perform Wudu.'
-      : 'Remember to perform Wudu.'
-    : p.name === 'Dhuhr'
-    ? 'Daily Hadith: “Prayer is light for the believer.”'
-    : p.name === 'Asr'
-    ? null  // Removed placeholder
-    : p.name === 'Isha'
-    ? null
-    : null
+                  p.name === 'Sunrise'
+                    ? '🌅 Not obligatory'
+                    : p.name === 'Fajr'
+                    ? isRamadan
+                      ? 'Remember to perform Wudu.'
+                      : 'Remember to perform Wudu.'
+                    : p.name === 'Dhuhr'
+                    ? 'Daily Hadith: “Prayer is light for the believer.”'
+                    : p.name === 'Asr'
+                    ? null
+                    : p.name === 'Isha'
+                    ? null
+                    : null
 
- 
                 return (
                   <article key={p.name} className="prayer-row-card">
                     <div className="prayer-row-main">
@@ -370,11 +339,7 @@ function PrayerTimes() {
                       </div>
                     </div>
 
-                    {/* The action buttons for Play Adhan and Nearby Mosque have been removed */}
-
-                    {/* Ramadan extras */}
                     {ramadanExtra}
-                    {/* Standard extras (hidden for Isha in Ramadan to avoid double message) */}
                     {extra && <p className="prayer-extra">{extra}</p>}
                   </article>
                 )

@@ -1,6 +1,7 @@
 import './App.css'
 import logoNav from './images/white_moon_icon.png'
 import homeIcon from './images/freeiconVector.webp'
+
 function App() {
   return (
     <div className="page">
@@ -11,7 +12,6 @@ function App() {
               <img
                 src={logoNav}
                 alt="Muslim Manager logo"
-                style={{ height: 38, maxHeight: 50, verticalAlign: "middle" }}
               />
             </div>
             <ul className="nav-links">
@@ -20,7 +20,6 @@ function App() {
                   <img
                     src={homeIcon}
                     alt="Home"
-                    style={{ height: 25, maxHeight: 30, verticalAlign: "middle" }}
                   />
                 </a>
               </li>
@@ -48,18 +47,10 @@ function App() {
               <p>Quickly calculate your Zakat—simple, fast, and accurate.</p>
             </a>
 
-
-
             <a className="feature-card feature-card-link" href="/qibla-finder">
               <h2>Mecca Finder</h2>
               <p>Quickly find the Qibla direction from wherever you are in the world.</p>
             </a>
- 
- 
-
- 
-
-
           </div>
         </div>
       </header>

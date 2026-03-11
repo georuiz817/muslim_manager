@@ -462,3 +462,99 @@
 }
 
 
+
+
+
+
+/* Add these to your existing app.css */
+
+/* Logo styling */
+.nav-logo img {
+  height: 38px;
+  max-height: 50px;
+  vertical-align: middle;
+}
+
+/* Home icon styling */
+.nav-links img {
+  height: 25px;
+  max-height: 30px;
+  vertical-align: middle;
+}
+
+/* Ramadan banner */
+.ramadan-banner {
+  background: #f7efd8;
+  color: #7d5c15;
+  margin-bottom: 18px;
+  border-left: 5px solid #d6b402;
+}
+
+.ramadan-banner-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ramadan-banner-title {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.ramadan-banner-date {
+  font-size: 15px;
+}
+
+.ramadan-banner-times {
+  display: flex;
+  flex-direction: row;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
+.ramadan-banner-times strong {
+  font-weight: 600;
+}
+
+.ramadan-banner-status {
+  margin-top: 2px;
+}
+
+.ramadan-banner-status .prayer-status {
+  color: #7d5c15;
+  font-weight: 500;
+}
+
+.ramadan-banner-status .prayer-status strong {
+  font-weight: 700;
+}
+
+/* Ramadan extras */
+.prayer-extra-ramadan-fajr {
+  font-weight: 500;
+  font-size: 14px;
+  display: block;
+  margin-top: 2px;
+}
+
+.prayer-extra-ramadan-maghrib {
+  font-weight: 500;
+  font-size: 14px;
+  display: block;
+  margin-top: 2px;
+}
+
+.prayer-extra-ramadan-isha {
+  font-weight: 500;
+  font-size: 14px;
+  display: block;
+  margin-top: 2px;
+}
+
+/* Remove the old prayer-extra style if you want to keep it as fallback */
+.prayer-extra {
+  margin: 0.7rem 0 0;
+  font-size: 0.85rem;
+}
