@@ -136,6 +136,18 @@ function ZakatCalc() {
             <div className="prayer-summary-header zakat-header-column">
               <div>
                 <p className="prayer-summary-title">Enter Your Amounts</p>
+                {/* LIVE METAL PRICES DISPLAY */}
+                <div className="prayer-summary-hijri" style={{marginBottom: '0.5em'}}>
+                  Gold: {
+                    typeof goldPricePerGram === 'number'
+                    ? `$${goldPricePerGram.toFixed(2)}`
+                    : '...'
+                  } / g &nbsp; &nbsp; Silver: {
+                    typeof silverPricePerGram === 'number'
+                    ? `$${silverPricePerGram.toFixed(2)}`
+                    : '...'
+                  } / g
+                </div>
                 <table className="zakat-table">
                   <tbody>
                     {/* Zakatable Assets */}
