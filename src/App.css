@@ -463,12 +463,6 @@
 }
 
 
-
-
-
-
-/* Add these to your existing app.css */
-
 /* Logo styling */
 .nav-logo img {
   height: 38px;
@@ -557,31 +551,51 @@
 }
 
 
-
-
-
-
-/* Add these to your existing app.css */
-
 /* Zakat Calculator specific styles */
 .zakat-main {
-  max-width: 480px;
+  max-width: 960px; /* Match prayer cards */
   margin: 0 auto;
-  margin-top: 0;
+  padding: 1.25rem 1.5rem 3rem;
+  box-sizing: border-box;
 }
 
 .zakat-section {
+  /* No direct padding required; handled by .zakat-main */
   padding: 0;
   margin-top: 0;
 }
 
+/* For individual Zakat cards, apply same spacing and look as prayer-summary-card */
+.zakat-input-card,
+.zakat-output-card {
+  max-width: 100%;
+  margin: 0 auto 0.9rem;
+  padding: 1.5rem 1.35rem;
+  border-radius: 1.4rem;
+  background: linear-gradient(
+    135deg,
+    rgba(245, 245, 245, 0.12),
+    rgba(226, 232, 240, 0.03)
+  );
+  border: 1px solid rgba(226, 232, 240, 0.4);
+  box-shadow:
+    0 20px 50px rgba(11, 61, 46, 0.85),
+    0 0 0 1px rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  box-sizing: border-box;
+}
+
+/* Remove any specific margin/padding from .zakat-input-card/.zakat-output-card children, if present */
 .zakat-input-card {
-  margin-top: 0;
-  margin-bottom: 16px;
+  /* remove previous margin values to make it uniform */
+  /* margin-top: 0; */
+  /* margin-bottom: 16px; */
 }
 
 .zakat-output-card {
-  margin-top: 0;
+  /* remove previous margin value */
+  /* margin-top: 0; */
 }
 
 .zakat-header-column {
@@ -641,7 +655,6 @@
 .zakat-manual-hint {
   margin-left: 4px;
   font-size: 13px;
-  color: #666;
 }
 
 .zakat-results-title {
@@ -660,8 +673,7 @@
 }
 
 .zakat-results-table td:first-child {
-  color: rgba(226, 232, 240, 0.78);
-}
+ }
 
 .zakat-results-table td:last-child {
   text-align: right;
@@ -670,31 +682,23 @@
 
 .zakat-net-assets {
   font-weight: 700;
-  color: #222;
-}
+ }
 
 .zakat-net-assets td:first-child {
   font-weight: 700;
-  color: #222;
-}
+ }
 
 .zakat-result-section {
   margin-top: 12px;
 }
 
 .zakat-error-message {
-  color: #a33;
-  font-weight: 500;
+   font-weight: 500;
 }
 
-.zakat-not-due-message {
-  color: #999;
-  font-weight: 500;
-}
-
+ 
 .zakat-due-message {
-  color: #057446;
-  font-weight: 600;
+   font-weight: 600;
 }
 
 .zakat-due-amount {
@@ -704,7 +708,6 @@
 }
 
 .zakat-note {
-  color: #062;
   font-size: 14px;
   margin-top: 5px;
 }
@@ -712,5 +715,31 @@
 /* Override prayer-summary-hijri when used in zakat context */
 .zakat-table .prayer-summary-hijri,
 .zakat-results-table .prayer-summary-hijri {
-  color: rgba(226, 232, 240, 0.78);
+  color: white;
+ }
+
+/* Responsive: match prayer-summary-card's responsive behaviors */
+@media (max-width: 640px) {
+  .zakat-main {
+    padding: 1.25rem 1.15rem 2.5rem;
+  }
 }
+
+/* 
+MINIMAL HTML CLASS CHANGES REQUIRED:
+
+- On the wrapping container of your Zakat cards, add the "zakat-main" class (e.g., <div class="zakat-main">).
+- For EACH Zakat card (inputs/results), use "zakat-input-card" and/or "zakat-output-card" classes, replacing any top-level divs that previously had no spacing or just used margin-top/margin-bottom directly.
+- Do NOT nest zakat-input-card/output-card inside prayer-summary-card anymore—use these directly.
+
+Example:
+
+<div class="zakat-main">
+  <div class="zakat-input-card">
+    ...inputs here...
+  </div>
+  <div class="zakat-output-card">
+    ...outputs/results here...
+  </div>
+</div>
+*/
