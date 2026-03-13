@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import homeIcon from './images/freeiconVector.webp'
 import logoNav from './images/white_moon_icon.png'
@@ -18,9 +18,45 @@ function ZakatCalc() {
   const [nisabType, setNisabType] = useState('gold')
   const [nisabValue, setNisabValue] = useState('')
 
-  // Defaults for convenience (can overwrite with manual input)
-  const defaultNisabGold = 85 * 70 // 85g gold x $70/g (dummy default)
-  const defaultNisabSilver = 595 * 0.9 // 595g silver x $0.90/g (dummy default)
+  // Gold and silver price state (per gram)
+  const [goldPricePerGram, setGoldPricePerGram] = useState(null)
+  const [silverPricePerGram, setSilverPricePerGram] = useState(null)
+
+  // Fallbacks for convenience (can overwrite with manual input)
+  // (matches previous dummy values if fetch fails)
+  const FALLBACK_GOLD_GRAMS = 87.48
+  const FALLBACK_SILVER_GRAMS = 612.36
+  const FALLBACK_GOLD_PRICE_PER_GRAM = 70
+  const FALLBACK_SILVER_PRICE_PER_GRAM = 0.9
+
+  // Fetch prices from API on mount
+  useEffect(() => {
+    // Gold
+    fetch('https://api.gold-api.com/price/XAU')
+      .then(res => res.json())
+      .then(data => {
+        if (data && typeof data.price === 'number') {
+          setGoldPricePerGram(data.price / 31.1035)
+        } else {
+          setGoldPricePerGram(FALLBACK_GOLD_PRICE_PER_GRAM)
+        }
+      }).catch(() => {
+        setGoldPricePerGram(FALLBACK_GOLD_PRICE_PER_GRAM)
+      })
+
+    // Silver
+    fetch('https://api.gold-api.com/price/XAG')
+      .then(res => res.json())
+      .then(data => {
+        if (data && typeof data.price === 'number') {
+          setSilverPricePerGram(data.price / 31.1035)
+        } else {
+          setSilverPricePerGram(FALLBACK_SILVER_PRICE_PER_GRAM)
+        }
+      }).catch(() => {
+        setSilverPricePerGram(FALLBACK_SILVER_PRICE_PER_GRAM)
+      })
+  }, [])
 
   // Parse and sum up inputs safely (zero if blank or invalid)
   const num = v => {
@@ -39,12 +75,21 @@ function ZakatCalc() {
   const netAssets = totalAssets - totalLiabilities
 
   // Nisab: Gold or Silver
+  let goldNisab =
+    typeof goldPricePerGram === 'number'
+      ? 87.48 * goldPricePerGram
+      : FALLBACK_GOLD_GRAMS * FALLBACK_GOLD_PRICE_PER_GRAM
+  let silverNisab =
+    typeof silverPricePerGram === 'number'
+      ? 612.36 * silverPricePerGram
+      : FALLBACK_SILVER_GRAMS * FALLBACK_SILVER_PRICE_PER_GRAM
+
   let nisab =
     nisabValue !== ''
       ? num(nisabValue)
       : nisabType === 'gold'
-      ? defaultNisabGold
-      : defaultNisabSilver
+      ? goldNisab
+      : silverNisab
 
   // Zakat calculation
   const zakatDue =
@@ -80,7 +125,7 @@ function ZakatCalc() {
 
         <div className="hero-content">
           <p className="hero-tagline">Zakat Calculator</p>
-          <h1 className="hero-title">See you'r price</h1>
+          <h1 className="hero-title">See your price</h1>
         </div>
       </header>
 
@@ -213,7 +258,7 @@ function ZakatCalc() {
                     checked={nisabType === 'gold'}
                     onChange={() => setNisabType('gold')}
                     className="zakat-radio-input"
-                  />Gold (85g)
+                  />Gold (87.48g)
                 </label>
                 <label className="zakat-radio-label">
                   <input
@@ -223,18 +268,21 @@ function ZakatCalc() {
                     checked={nisabType === 'silver'}
                     onChange={() => setNisabType('silver')}
                     className="zakat-radio-input"
-                  />Silver (595g)
+                  />Silver (612.36g)
                 </label>
                 <span className="zakat-manual-section">
-                  <input
-                    className="method-select zakat-manual-input"
-                    type="number"
-                    min="0"
-                    inputMode="decimal"
-                    value={nisabValue}
-                    onChange={e => setNisabValue(e.target.value)}
-                    placeholder={nisabType === 'gold' ? defaultNisabGold : defaultNisabSilver}
-                  />
+                <input
+  className="method-select zakat-manual-input"
+  type="number"
+  min="0"
+  inputMode="decimal"
+  value={nisabValue}
+  onChange={e => setNisabValue(e.target.value)}
+  placeholder={
+    (nisabType === 'gold' ? goldNisab : silverNisab)
+      ?.toLocaleString(undefined, { maximumFractionDigits: 2 })
+  }
+/>
                   <span className="prayer-summary-hijri zakat-manual-hint">Manual amount</span>
                 </span>
               </div>
