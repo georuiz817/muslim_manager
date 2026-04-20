@@ -15,7 +15,7 @@ function ZakatCalc() {
 
   const [nisabType, setNisabType] = useState('gold')
   const [nisabValue, setNisabValue] = useState('')
-
+6
   const [goldPricePerGram, setGoldPricePerGram] = useState(null)
   const [silverPricePerGram, setSilverPricePerGram] = useState(null)
 

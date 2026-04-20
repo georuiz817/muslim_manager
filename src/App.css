@@ -58,6 +58,27 @@
   padding-bottom: 0;
 }
 
+/* Home (mobile): keep full-viewport background so the page looks uniform,
+   but keep the hero sized to its content with a small safe-area-aware inset. */
+@media (max-width: 767px) {
+  .page--home {
+    /* ensure the page background fills the viewport on mobile */
+    min-height: 100vh;
+  }
+
+  .hero--home {
+    /* let the hero take the full viewport so the page background is continuous */
+    min-height: 100vh;
+    padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 0px));
+    background: transparent; /* allow .page gradient to show through */
+  }
+
+  .hero--home .hero-content {
+    /* modest bottom padding so content doesn't sit flush with the screen edge */
+    padding-bottom: 1rem;
+  }
+}
+
 .nav {
   position: absolute;
   top: 0;
@@ -172,7 +193,8 @@
   margin: 0 auto;
   display: grid;
   gap: 1.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  /* Default: stack cards for mobile + tablets (one column) */
+  grid-template-columns: 1fr;
   text-align: left;
 }
 
@@ -455,10 +477,49 @@
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .hero {
     padding-top: 4rem;
     padding-bottom: 2.25rem;
+  }
+
+  .hero--home {
+    padding-bottom: 1.75rem;
+  }
+
+  .hero--home .hero-content {
+    max-width: 1180px;
+    padding: 2.5rem 2rem 1.5rem;
+  }
+
+  .hero--home .hero-tagline {
+    margin-bottom: 1rem;
+  }
+
+  .hero--home .hero-title {
+    font-size: clamp(2.65rem, 4.2vw, 3.4rem);
+    margin-bottom: 0;
+  }
+
+  .hero--home .cards-grid {
+    margin-top: 2.75rem;
+    gap: 1.85rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .hero--home .feature-card {
+    padding: 2.15rem 1.85rem;
+    border-radius: 1.2rem;
+  }
+
+  .hero--home .feature-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .hero--home .feature-card p {
+    font-size: 1.08rem;
+    line-height: 1.55;
   }
 }
 

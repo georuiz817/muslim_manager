@@ -4,8 +4,8 @@ import homeIcon from './images/freeiconVector.webp'
 
 function App() {
   return (
-    <div className="page">
-      <header className="hero" id="top">
+    <div className="page page--home">
+      <header className="hero hero--home" id="top">
         <nav className="nav">
           <div className="nav-inner">
             <div className="nav-logo">
@@ -33,9 +33,6 @@ function App() {
           <h1 className="hero-title">
             Manage Your Faith
           </h1>
-          <p className="hero-subtitle">
-    
-          </p>
           <div className="cards-grid">
             <a className="feature-card feature-card-link" href="/prayer-times">
               <h2>Prayer Times</h2>
