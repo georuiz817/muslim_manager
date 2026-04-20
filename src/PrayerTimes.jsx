@@ -3,7 +3,8 @@ import './App.css'
 import homeIcon from './images/freeiconVector.webp'
 import logoNav from './images/white_moon_icon.png'
 
-const FORCE_RAMADAN = true // 🔧 dev-only: set false in production
+// 🔧 dev-only: set false in production
+const FORCE_RAMADAN = false
 
 const METHODS = [
   { id: 3, label: 'Muslim World League' },
@@ -16,11 +17,14 @@ const METHODS = [
 ]
 
 const ASR_SCHOOLS = [
-  { id: 0, label: 'Standard (Shafi\'i)' },
+  { id: 0, label: "Standard (Shafi'i)" },
   { id: 1, label: 'Hanafi juristic' },
 ]
 
 const ORDERED_PRAYERS = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha']
+
+// Dhaka, Bangladesh fallback coordinates
+const DHAKA_COORDS = { lat: 23.8103, lon: 90.4125 }
 
 function formatCountdown(from, to) {
   const diffMs = to - from
@@ -38,6 +42,8 @@ function PrayerTimes() {
   const [asrSchool, setAsrSchool] = useState(0)
   const [now, setNow] = useState(() => new Date())
   const [coords, setCoords] = useState(null)
+  const [usingFallback, setUsingFallback] = useState(false)
+  const [locating, setLocating] = useState(true)
   const [timings, setTimings] = useState(null)
   const [hijriInfo, setHijriInfo] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -49,10 +55,12 @@ function PrayerTimes() {
     return () => clearInterval(id)
   }, [])
 
-  // Try to get user coordinates once
+  // Get user coordinates once on mount
   useEffect(() => {
     if (!('geolocation' in navigator)) {
-      setCoords({ lat: 21.4225, lon: 39.8262 })
+      setCoords(DHAKA_COORDS)
+      setUsingFallback(true)
+      setLocating(false)
       return
     }
 
@@ -62,9 +70,14 @@ function PrayerTimes() {
           lat: position.coords.latitude,
           lon: position.coords.longitude,
         })
+        setUsingFallback(false)
+        setLocating(false)
       },
       () => {
-        setCoords({ lat: 21.4225, lon: 39.8262 })
+        // User denied or geolocation failed — fall back to Dhaka
+        setCoords(DHAKA_COORDS)
+        setUsingFallback(true)
+        setLocating(false)
       },
       { enableHighAccuracy: true, timeout: 10000 },
     )
@@ -91,9 +104,10 @@ function PrayerTimes() {
         const hijri = json.data.date?.hijri
 
         if (FORCE_RAMADAN && hijri) {
+          // NOTE: only patches the month label — day/year remain as-is for dev testing
           hijri.month = { ...hijri.month, number: 9, en: 'Ramadan' }
         }
-        
+
         setHijriInfo(hijri)
       } catch (err) {
         setError(err.message || 'Unable to load prayer times right now.')
@@ -105,44 +119,7 @@ function PrayerTimes() {
     fetchTimings()
   }, [coords, methodId, asrSchool])
 
-  // --- Ramadan logic helpers ---
-  const isRamadan = hijriInfo && hijriInfo.month && Number(hijriInfo.month.number) === 9
-
-  // For quick lookup of specific prayer times by name
-  const prayerTimesByName = useMemo(() => {
-    const map = {}
-    if (!timings) return map
-    const today = new Date()
-    const [year, month, date] = [today.getFullYear(), today.getMonth(), today.getDate()]
-    for (const name of ORDERED_PRAYERS) {
-      const timeStr = timings[name]
-      if (timeStr) {
-        const [hours, minutes] = timeStr.split(':').map(Number)
-        map[name] = new Date(year, month, date, hours, minutes, 0)
-      }
-    }
-    return map
-  }, [timings])
-
-  const fajrTime = prayerTimesByName['Fajr']
-  const maghribTime = prayerTimesByName['Maghrib']
-
-  // Ramadan fasting status and countdown
-  let ramadanFastStatus = null
-  let ramadanFastCountdown = null
-  if (isRamadan && fajrTime && maghribTime) {
-    if (now < fajrTime) {
-      ramadanFastStatus = "Fasting begins in"
-      ramadanFastCountdown = formatCountdown(now, fajrTime)
-    } else if (now >= fajrTime && now < maghribTime) {
-      ramadanFastStatus = "Iftar in"
-      ramadanFastCountdown = formatCountdown(now, maghribTime)
-    } else if (now >= maghribTime) {
-      ramadanFastStatus = "Fasting completed for today"
-      ramadanFastCountdown = null
-    }
-  }
-
+  // Parse all prayer times into Date objects (single source of truth)
   const parsedPrayers = useMemo(() => {
     if (!timings) return []
 
@@ -158,10 +135,32 @@ function PrayerTimes() {
     }).filter(Boolean)
   }, [timings])
 
+  // Derive individual prayer times directly from parsedPrayers (no duplicate memo)
+  const fajrTime = parsedPrayers.find((p) => p.name === 'Fajr')?.at ?? null
+  const maghribTime = parsedPrayers.find((p) => p.name === 'Maghrib')?.at ?? null
+
+  // Ramadan helpers
+  const isRamadan = hijriInfo && hijriInfo.month && Number(hijriInfo.month.number) === 9
+
+  let ramadanFastStatus = null
+  let ramadanFastCountdown = null
+  if (isRamadan && fajrTime && maghribTime) {
+    if (now < fajrTime) {
+      ramadanFastStatus = 'Fasting begins in'
+      ramadanFastCountdown = formatCountdown(now, fajrTime)
+    } else if (now >= fajrTime && now < maghribTime) {
+      ramadanFastStatus = 'Iftar in'
+      ramadanFastCountdown = formatCountdown(now, maghribTime)
+    } else {
+      // now >= maghribTime — fasting done for today
+      ramadanFastStatus = 'Fasting completed for today'
+      ramadanFastCountdown = null
+    }
+  }
+
   const nextPrayer = useMemo(() => {
     if (!parsedPrayers.length) return null
-    const upcoming = parsedPrayers.find((p) => p.at > now)
-    return upcoming || null
+    return parsedPrayers.find((p) => p.at > now) || null
   }, [parsedPrayers, now])
 
   const nextCountdown = nextPrayer ? formatCountdown(now, nextPrayer.at) : null
@@ -170,7 +169,8 @@ function PrayerTimes() {
     if (!parsedPrayers.length) return []
     const upcoming = parsedPrayers.filter((p) => p.at > now)
     const past = parsedPrayers.filter((p) => p.at <= now)
-    return [...upcoming, ...past.reverse()]
+    // Avoid mutating in place — spread before reversing
+    return [...upcoming, ...[...past].reverse()]
   }, [parsedPrayers, now])
 
   const hijriDisplay = hijriInfo
@@ -189,18 +189,12 @@ function PrayerTimes() {
         <nav className="nav">
           <div className="nav-inner">
             <div className="nav-logo">
-              <img
-                src={logoNav}
-                alt="Muslim Manager logo"
-              />
+              <img src={logoNav} alt="Muslim Manager logo" />
             </div>
             <ul className="nav-links">
               <li>
                 <a href="/">
-                  <img
-                    src={homeIcon}
-                    alt="Home"
-                  />
+                  <img src={homeIcon} alt="Home" />
                 </a>
               </li>
             </ul>
@@ -215,6 +209,14 @@ function PrayerTimes() {
 
       <main>
         <section className="prayer-section">
+
+          {/* Location notice when using fallback */}
+          {usingFallback && !locating && (
+            <p className="prayer-status prayer-status-warning">
+              📍 Location access denied — showing times for Dhaka, Bangladesh. Enable location for accurate times.
+            </p>
+          )}
+
           <div className="method-row">
             <div className="method-group">
               <label className="method-label" htmlFor="method-select">
@@ -224,7 +226,7 @@ function PrayerTimes() {
                 id="method-select"
                 className="method-select"
                 value={methodId}
-                onChange={(event) => setMethodId(Number(event.target.value))}
+                onChange={(e) => setMethodId(Number(e.target.value))}
               >
                 {METHODS.map((m) => (
                   <option key={m.id} value={m.id}>
@@ -241,7 +243,7 @@ function PrayerTimes() {
                 id="asr-select"
                 className="method-select"
                 value={asrSchool}
-                onChange={(event) => setAsrSchool(Number(event.target.value))}
+                onChange={(e) => setAsrSchool(Number(e.target.value))}
               >
                 {ASR_SCHOOLS.map((m) => (
                   <option key={m.id} value={m.id}>
@@ -252,58 +254,78 @@ function PrayerTimes() {
             </div>
           </div>
 
-          {/* --- Ramadan banner if active --- */}
+          {/* Ramadan banner */}
           {isRamadan && (
             <div className="prayer-summary-card ramadan-banner">
               <div className="ramadan-banner-content">
-                <span className="ramadan-banner-title">
-                  🌙 Ramadan Mubarak
-                </span>
-                <span className="ramadan-banner-date">
-                  {hijriDisplay}
-                </span>
+                <span className="ramadan-banner-title">🌙 Ramadan Mubarak</span>
+                <span className="ramadan-banner-date">{hijriDisplay}</span>
                 <div className="ramadan-banner-times">
                   <div>
-                    <strong>Fast Start (Suhoor ends):</strong> {fajrTime ? fajrTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "--"}
+                    <strong>Fast Start (Suhoor ends):</strong>{' '}
+                    {fajrTime
+                      ? fajrTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                      : '--'}
                   </div>
                   <div>
-                    <strong>Fast Break (Iftar):</strong> {maghribTime ? maghribTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "--"}
+                    <strong>Fast Break (Iftar):</strong>{' '}
+                    {maghribTime
+                      ? maghribTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                      : '--'}
                   </div>
                 </div>
-                <div className="ramadan-banner-status">
-                  {ramadanFastStatus && (
+                {/* FIX: single status block — no duplicate render */}
+                {ramadanFastStatus && (
+                  <div className="ramadan-banner-status">
                     <span className="prayer-status">
                       {ramadanFastStatus}
-                      {ramadanFastCountdown && <> <strong>{ramadanFastCountdown}</strong></>}
+                      {ramadanFastCountdown && (
+                        <>
+                          {' '}
+                          <strong>{ramadanFastCountdown}</strong>
+                        </>
+                      )}
                     </span>
-                  )}
-                  {isRamadan && fajrTime && maghribTime && now >= maghribTime && (
-                    <span className="prayer-status">
-                      Fasting completed for today
-                    </span>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
 
           <div className="prayer-list">
-            {loading && <p className="prayer-status">Loading prayer times…</p>}
-            {error && !loading && <p className="prayer-status prayer-status-error">{error}</p>}
+            {(locating || loading) && (
+              <p className="prayer-status">
+                {locating ? 'Getting your location…' : 'Loading prayer times…'}
+              </p>
+            )}
+            {error && !loading && (
+              <p className="prayer-status prayer-status-error">{error}</p>
+            )}
 
-            {!loading &&
+            {!locating &&
+              !loading &&
               !error &&
               orderedForDisplay.map((p) => {
                 const countdown = formatCountdown(now, p.at)
 
-                let ramadanExtra = null;
+                let ramadanExtra = null
                 if (isRamadan) {
                   if (p.name === 'Fajr') {
-                    ramadanExtra = <span className="prayer-extra-ramadan-fajr">🕊️ Start of fasting</span>
+                    ramadanExtra = (
+                      <span className="prayer-extra-ramadan-fajr">🕊️ Start of fasting</span>
+                    )
                   } else if (p.name === 'Maghrib') {
-                    ramadanExtra = <span className="prayer-extra-ramadan-maghrib">🍽️ Time to break fast (Iftar)</span>
+                    ramadanExtra = (
+                      <span className="prayer-extra-ramadan-maghrib">
+                        🍽️ Time to break fast (Iftar)
+                      </span>
+                    )
                   } else if (p.name === 'Isha') {
-                    ramadanExtra = <span className="prayer-extra-ramadan-isha">🌙 Taraweeh prayer after Isha</span>
+                    ramadanExtra = (
+                      <span className="prayer-extra-ramadan-isha">
+                        🌙 Taraweeh prayer after Isha
+                      </span>
+                    )
                   }
                 }
 
@@ -311,15 +333,9 @@ function PrayerTimes() {
                   p.name === 'Sunrise'
                     ? '🌅 Not obligatory'
                     : p.name === 'Fajr'
-                    ? isRamadan
-                      ? 'Remember to perform Wudu.'
-                      : 'Remember to perform Wudu.'
+                    ? 'Remember to perform Wudu.'
                     : p.name === 'Dhuhr'
-                    ? 'Daily Hadith: “Prayer is light for the believer.”'
-                    : p.name === 'Asr'
-                    ? null
-                    : p.name === 'Isha'
-                    ? null
+                    ? 'Daily Hadith: "Prayer is light for the believer."'
                     : null
 
                 return (
