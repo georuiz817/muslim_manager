@@ -41,9 +41,11 @@ function PrayerTimes() {
   const [methodId, setMethodId] = useState(3)
   const [asrSchool, setAsrSchool] = useState(0)
   const [now, setNow] = useState(() => new Date())
-  const [coords, setCoords] = useState(null)
+  // Default to the Dhaka fallback silently; do not request geolocation here.
+  // Geolocation prompts should only occur on the Qibla Finder page.
+  const [coords, setCoords] = useState(DHAKA_COORDS)
   const [usingFallback, setUsingFallback] = useState(false)
-  const [locating, setLocating] = useState(true)
+  const [locating, setLocating] = useState(false)
   const [timings, setTimings] = useState(null)
   const [hijriInfo, setHijriInfo] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -55,33 +57,9 @@ function PrayerTimes() {
     return () => clearInterval(id)
   }, [])
 
-  // Get user coordinates once on mount
-  useEffect(() => {
-    if (!('geolocation' in navigator)) {
-      setCoords(DHAKA_COORDS)
-      setUsingFallback(true)
-      setLocating(false)
-      return
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setCoords({
-          lat: position.coords.latitude,
-          lon: position.coords.longitude,
-        })
-        setUsingFallback(false)
-        setLocating(false)
-      },
-      () => {
-        // User denied or geolocation failed — fall back to Dhaka
-        setCoords(DHAKA_COORDS)
-        setUsingFallback(true)
-        setLocating(false)
-      },
-      { enableHighAccuracy: true, timeout: 10000 },
-    )
-  }, [])
+  // NOTE: We intentionally do NOT request navigator.geolocation here.
+  // QiblaFinder (and any other feature that explicitly needs user location)
+  // should prompt the user when they interact with that feature.
 
   // Fetch daily timings whenever coords / method / asrSchool change
   useEffect(() => {

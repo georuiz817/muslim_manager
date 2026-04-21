@@ -1,446 +1,301 @@
-import React, { useState, useRef } from 'react'
+import { useState } from "react"
+import logoNav from './images/white_moon_icon.png'
+import homeIcon from './images/freeiconVector.webp'
 
-// --- Util: Haversine formula to calculate distance (km) ---
-function haversine(lat1, lon1, lat2, lon2) {
-  const R = 6371 // km
-  const dLat = ((lat2 - lat1) * Math.PI) / 180
-  const dLon = ((lon2 - lon1) * Math.PI) / 180
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) ** 2
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-  return R * c
+// --- Qibla utility: bearing formula (great-circle) ---
+const KAABA_LAT = 21.4225
+const KAABA_LON = 39.8262
+function getQiblaBearing(lat, lon) {
+  // spherical formula
+  const toRad = deg => (deg * Math.PI) / 180
+  const toDeg = rad => (rad * 180) / Math.PI
+
+  const φ1 = toRad(lat)
+  const φ2 = toRad(KAABA_LAT)
+  const Δλ = toRad(KAABA_LON - lon)
+  const y = Math.sin(Δλ) * Math.cos(φ2)
+  const x = Math.cos(φ1) * Math.sin(φ2) -
+            Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ)
+  let θ = Math.atan2(y, x)
+  θ = toDeg(θ)
+  return (θ + 360) % 360 // compass-style bearing from North
 }
 
-// --- Modular Component: Mosque Card ---
-function MosqueCard({ mosque }) {
-  const {
-    name,
-    address,
-    distance,
-    lat,
-    lon,
-    website,
-  } = mosque
+// --- Custom React hook for geolocation ---
+function useGeolocation() {
+  const [coords, setCoords] = useState(null)
+  const [status, setStatus] = useState('idle') // idle | loading | success | error
+  const [error, setError] = useState(null)
 
-  // Prefer external website, otherwise "Open in Google Maps"
-  let linkUrl = website
-  let linkText = "Website"
-  if (!website) {
-    linkUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`
-    linkText = "Open in Google Maps"
-  }
-
-  return (
-    <div
-      className="prayer-summary-card"
-      role="button"
-      tabIndex={0}
-      style={{
-        marginBottom: 18,
-        padding: 16,
-        borderRadius: 10,
-        boxShadow: '0 1px 4px 0 #ddd',
-        background: '#fff',
-        minWidth: 0,
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      <span style={{ fontWeight: 600, fontSize: 18, color: '#222', marginBottom: 4, wordBreak: 'break-word' }}>
-        {name || 'Unnamed Mosque'}
-      </span>
-      <span style={{ color: '#28bc8d', fontSize: 16, marginBottom: 3 }}>
-        🕌 {Number(distance).toFixed(2)} km
-      </span>
-      <span style={{ fontSize: 15, color: '#444', marginBottom: 8, wordBreak: 'break-word' }}>
-        {address || '—'}
-      </span>
-      <a
-        href={linkUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="prayer-ghost-button"
-        style={{
-          display: 'inline-block',
-          fontWeight: 600,
-          color: '#28bc8d',
-          fontSize: 15,
-          marginTop: 4,
-          padding: '10px 0',
-          border: '1px solid #28bc8d',
-          borderRadius: 6,
-          background: 'white',
-          textAlign: 'center',
-          minWidth: 0,
-        }}
-      >
-        <span role="img" aria-label="link" style={{ marginRight: 7, verticalAlign: '-0.15em' }}>
-          <svg width="22" height="22" style={{ verticalAlign: 'middle' }} viewBox="0 0 22 22">
-            <g fill="none" stroke="#28bc8d" strokeWidth="2">
-              <circle cx="11" cy="11" r="10" />
-              <path d="M8.5 11l2.2 2.2M8.5 11l2.2-2.2M8.5 11h5.2" />
-            </g>
-          </svg>
-        </span>
-        {linkText}
-      </a>
-    </div>
-  )
-}
-
-// --- Modular Component: Mosque List ---
-function MosqueList({ mosques }) {
-  if (!mosques.length) return null
-  return (
-    <div style={{ marginTop: 8 }}>
-      {mosques.map((mosque, idx) => (
-        <MosqueCard mosque={mosque} key={mosque.id || `${mosque.lat},${mosque.lon},${idx}`} />
-      ))}
-    </div>
-  )
-}
-
-// --- Mosque Finder (Location-First) Page ---
-function MosqueFinder() {
-  // STATE
-  const [coords, setCoords] = useState(null) // { lat, lon }
-  const [mosques, setMosques] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [empty, setEmpty] = useState(false)
-  const [locState, setLocState] = useState('idle') // idle | requesting | granted | denied
-
-  // Cache (in-memory), also use localStorage where possible
-  const cache = useRef({})
-  const localStorageKey = 'mosqueFinderCacheV2'
-
-  // Load cache from localStorage once
-  React.useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(localStorageKey)
-      if (raw) cache.current = JSON.parse(raw)
-    } catch (e) {}
-  }, [])
-
-  // Cache by coordinate, rounded to 4 decimals = ~11m precision
-  function coordsCacheKey(lat, lon) {
-    return `${Number(lat).toFixed(4)},${Number(lon).toFixed(4)}`
-  }
-
-  // Helper: cache results to localStorage
-  function updateCache(key, value) {
-    cache.current[key] = value
-    try {
-      window.localStorage.setItem(localStorageKey, JSON.stringify(cache.current))
-    } catch (e) {}
-  }
-
-  // --- Fetch nearby mosques given coords ---
-  async function fetchMosquesNearby(lat, lon) {
-    setLoading(true)
-    setError('')
-    setEmpty(false)
-    setMosques([])
-
-    const cacheKey = coordsCacheKey(lat, lon)
-    if (cache.current[cacheKey]) {
-      const cached = cache.current[cacheKey]
-      setMosques(cached.mosques)
-      setLoading(false)
-      setEmpty(cached.mosques.length === 0)
-      setCoords({ lat, lon })
-      return
-    }
-
-    // Build Overpass QL for all relevant tags, within 4000m radius
-    // Includes: amenity=place_of_worship + religion=muslim; fallback building=mosque
-    const overpassQuery = `
-      [out:json][timeout:20];
-      (
-        node["amenity"="place_of_worship"]["religion"="muslim"](around:4000,${lat},${lon});
-        way["amenity"="place_of_worship"]["religion"="muslim"](around:4000,${lat},${lon});
-        relation["amenity"="place_of_worship"]["religion"="muslim"](around:4000,${lat},${lon});
-
-        node["building"="mosque"](around:4000,${lat},${lon});
-        way["building"="mosque"](around:4000,${lat},${lon});
-        relation["building"="mosque"](around:4000,${lat},${lon});
-      );
-      out center;
-    `.replace(/\s+/g, ' ')
-
-    try {
-      const response = await fetch(
-        'https://overpass-api.de/api/interpreter',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-          body: `data=${encodeURIComponent(overpassQuery)}`,
-        }
-      )
-      if (!response.ok) throw new Error('Could not reach Overpass API. Too many requests?')
-      const overpass = await response.json()
-      const elements = overpass && overpass.elements ? overpass.elements : []
-
-      // Parse, filter, map & enrich
-      let mosqueList = elements
-        .map((el) => {
-          const lat_ = el.type === 'node'
-            ? el.lat
-            : el.center && el.center.lat
-          const lon_ = el.type === 'node'
-            ? el.lon
-            : el.center && el.center.lon
-          if (!lat_ || !lon_) return null
-          const tags = el.tags || {}
-
-          let name = tags.name || tags['name:en'] || ''
-          if (!name && tags['name:bn']) name = tags['name:bn']
-          // Address or area
-          let addr =
-            tags['addr:street'] ||
-            tags['addr:place'] ||
-            tags['addr:district'] ||
-            tags['addr:city'] ||
-            tags['addr:suburb'] ||
-            tags['addr:neighbourhood'] ||
-            tags['name:en'] ||
-            tags['name:bn'] ||
-            ''
-          // Try full address
-          if (tags['addr:full']) addr = tags['addr:full']
-          // Prefer shorter, Bengali if available
-          if (tags['addr:place:bn']) addr = tags['addr:place:bn']
-          // Website if present
-          let website = tags['website'] || tags['contact:website'] || ''
-          return {
-            id: el.id,
-            name,
-            address: addr,
-            website,
-            lat: lat_,
-            lon: lon_,
-            distance: haversine(Number(lat), Number(lon), Number(lat_), Number(lon_))
-          }
-        })
-        .filter(Boolean)
-        .sort((a, b) => a.distance - b.distance)
-
-      // Deduplicate by lat/lon
-      const uniqueMap = {}
-      mosqueList = mosqueList.filter((m) => {
-        const sig = `${m.lat},${m.lon}`
-        if (uniqueMap[sig]) return false
-        uniqueMap[sig] = true
-        return true
-      })
-
-      setMosques(mosqueList)
-      setCoords({ lat, lon })
-      setLoading(false)
-      setEmpty(mosqueList.length === 0)
-      updateCache(cacheKey, { mosques: mosqueList })
-    } catch (err) {
-      setLoading(false)
-      setMosques([])
-      setError('Network error, or service unavailable. Try again later.')
-    }
-  }
-
-  // --- Location Request Handler ---
-  function handleFindMyLocation() {
-    setError('')
-    setEmpty(false)
-    setLocState('requesting')
-    setLoading(false)
-    setMosques([])
+  const getLocation = () => {
+    setStatus('loading')
+    setError(null)
     setCoords(null)
-
-    if (!window.navigator.geolocation) {
-      setError('Geolocation is not supported by your device or browser.')
-      setLocState('denied')
+    if (!navigator.geolocation) {
+      setError('Geolocation not supported by your browser.')
+      setStatus('error')
       return
     }
-
-    window.navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords
-        setLocState('granted')
-        fetchMosquesNearby(latitude, longitude)
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        setCoords({
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude
+        })
+        setStatus('success')
       },
-      (err) => {
-        setLocState('denied')
-        if (err.code === 1) {
-          setError('Location permission denied. Please allow access to search for nearby mosques.')
-        } else if (err.code === 2) {
-          setError('Location not found. Please try again from another area.')
-        } else {
-          setError('Could not access your location. Please allow location permission and try again.')
-        }
+      err => {
+        if (err.code === 1)
+          setError("Permission denied. Please allow location access.")
+        else if (err.code === 2)
+          setError("Location unavailable.")
+        else
+          setError("Could not retrieve location.")
+        setStatus('error')
       },
-      {
-        enableHighAccuracy: false,
-        timeout: 12000,
-        maximumAge: 0,
-      }
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }
     )
   }
 
-  // --- Optionally: Auto-prompt on initial page load, commented out for stricter privacy UX
-  // React.useEffect(() => {
-  //   handleFindMyLocation()
-  // }, [])
+  return { coords, status, error, getLocation }
+}
 
-  // --- RENDER ---
+// --- Compass Arrow SVG, rotates by given bearing (deg) ---
+function CompassArrow({ bearing = 0 }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        width: 88, height: 88, borderRadius: "50%",
+        background: "#f6fdfc",
+        border: "2px solid #28bc8d",
+        marginBottom: 8, position: "relative",
+        boxShadow: "0 2px 6px rgba(40,188,141,0.06)",
+      }}
+    >
+      <span style={{
+        transition: "transform 0.6s cubic-bezier(.39,1.01,.55,.99)",
+        display: "inline-block",
+        transform: `rotate(${bearing}deg)`,
+        fontSize: 48,
+        color: "#28bc8d",
+        userSelect: "none"
+      }}>
+        {/* Arrow points 'north' and rotates to Qibla */}
+        <svg width="45" height="48" viewBox="0 0 40 42"
+          aria-label="Qibla Arrow" style={{ display: "block" }}>
+          <polygon points="20,4 32,34 20,28 8,34" fill="#28bc8d" />
+        </svg>
+      </span>
+      <span style={{
+        position: "absolute", left: "50%", top: "50%",
+        transform: "translate(-50%,-50%)",
+        fontWeight: 700, fontSize: 13,
+        color: "#057446", opacity: 0.6,
+        pointerEvents: "none",
+        userSelect: "none",
+      }}>
+        N
+      </span>
+    </div>
+  )
+}
+
+// --- Readable compass direction ("East-Northeast", etc) ---
+function bearingToDirection(bearing) {
+  const directions = [
+    "North", "North-East", "East", "South-East",
+    "South", "South-West", "West", "North-West", "North"
+  ]
+  const idx = Math.round(bearing / 45) % 8
+  return directions[idx]
+}
+
+// --- Status/Error Screen component ---
+function QiblaStatusScreen({ status, error, onRetry }) {
+  return (
+    <div style={{
+      minHeight: 120, display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center"
+    }}>
+      {status === "idle" &&
+        <span className="prayer-extra" style={{ color: "#757575" }}>
+          Click &ldquo;Detect Qibla&rdquo; to begin.
+        </span>
+      }
+      {status === "loading" &&
+        <span className="prayer-extra" style={{ color: "#555" }}>
+          Detecting your location…
+        </span>
+      }
+      {status === "error" &&
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <span className="prayer-extra" style={{ color: "#a33", fontWeight: 500 }}>{error}</span>
+          <button
+            onClick={onRetry}
+            style={{
+              marginTop: 14,
+              fontWeight: 600,
+              fontSize: 15,
+              background: "#eee",
+              color: "#1d273d",
+              border: 0,
+              borderRadius: 5,
+              padding: "8px 22px",
+              cursor: "pointer"
+            }}>
+            Retry
+          </button>
+        </div>
+      }
+    </div>
+  )
+}
+
+// --- Qibla Result Screen: shows everything if ready ---
+function QiblaResults({ coords, bearing }) {
+  return (
+    <div
+      style={{
+        display: "flex", flexDirection: "column", alignItems: "center", width: "100%"
+      }}>
+      <CompassArrow bearing={bearing} />
+      <div className="prayer-summary-title" style={{ fontWeight: 600, fontSize: 20 }}>
+        Qibla Bearing: <span style={{ color: "#28bc8d" }}>{bearing}°</span>
+        <span style={{ color: "#333", fontWeight: 400 }}>
+          {" "}
+          from north
+        </span>
+      </div>
+      <div
+        className="prayer-extra"
+        style={{ marginTop: 0, fontSize: 15, color: "#057446" }}
+      >
+        Direction: <strong>{bearingToDirection(bearing)}</strong>
+      </div>
+      {coords &&
+        <div className="prayer-extra" style={{ marginTop: 8, color: "#384" }}>
+          <span style={{ fontSize: 14 }}>
+            Your Location: <code>{coords.latitude.toFixed(5)}, {coords.longitude.toFixed(5)}</code>
+          </span>
+        </div>
+      }
+      <div style={{ marginTop: 12, fontSize: 13 }}>
+        <span className="prayer-extra" style={{ color: "#062", fontSize: 13 }}>
+          Face this direction when you pray. <br />
+          <span style={{ color: "#28bc8d" }}>*</span> Kaaba in Makkah is at 21.4225°N, 39.8262°E
+        </span>
+      </div>
+    </div>
+  )
+}
+
+// --- Main QiblaFinder, can be used standalone or imported in App.jsx ---
+function QiblaFinder() {
+  // Use custom hook
+  const { coords, status, error, getLocation } = useGeolocation()
+  const [bearing, setBearing] = useState(null)
+
+  // Compute bearing whenever coords change
+  React.useEffect(() => {
+    if (coords) {
+      setBearing(Math.round(getQiblaBearing(coords.latitude, coords.longitude)))
+    } else {
+      setBearing(null)
+    }
+  }, [coords])
+
   return (
     <div className="page">
       <header className="hero hero--compact" id="top">
         <nav className="nav">
           <div className="nav-inner">
-            <div className="nav-logo">Muslim Manager</div>
+            <div className="nav-logo">
+              <img
+                src={logoNav}
+                alt="Muslim Manager logo"
+                style={{ height: 38, maxHeight: 50, verticalAlign: "middle" }}
+              />
+            </div>
             <ul className="nav-links">
               <li>
-                <a href="/">Home</a>
+                <a href="/">
+                  <img
+                    src={homeIcon}
+                    alt="Home"
+                    style={{ height: 25, maxHeight: 30, verticalAlign: "middle" }}
+                  />
+                </a>
               </li>
-              <li>
-                <a href="#about">About</a>
-              </li>
-              <li>
-                <a href="#contact">Contact</a>
-              </li>
+              {/* Future nav links go here */}
             </ul>
           </div>
         </nav>
         <div className="hero-content">
-          <p className="hero-tagline">Mosque Finder</p>
-          <h1 className="hero-title">Find Nearby Mosques</h1>
+          <p className="hero-tagline">Mecca Finder</p>
+          <h1 className="hero-title">Find Your Direction For Prayer</h1>
           <p className="hero-subtitle">
-            Quickly locate mosques near you, anywhere in Bangladesh.<br />
-            Your location is required to use this feature.
+            Easily determine the Qibla from your current location using GPS.
           </p>
         </div>
       </header>
-      <main style={{
-        maxWidth: 390,
-        margin: "0 auto",
-        padding: "0 0 20px 0"
-      }}>
-        <section
-          className="prayer-section"
-          style={{
-            marginTop: 8,
-            padding: "8px 0",
-            width: "100%",
-            maxWidth: 390,
-            minHeight: 250,
-          }}
-        >
+      <main style={{ margin: "0 auto", maxWidth: 340 }}>
+        <section className="prayer-section" style={{ padding: 0, marginTop: 0 }}>
           <div
             className="prayer-summary-card"
             style={{
-              background: '#fff',
-              marginBottom: 16,
-              minWidth: 0,
-            }}
-          >
-            {locState === 'idle' && (
-              <button
-                className="prayer-ghost-button"
-                style={{
-                  width: '100%',
-                  fontSize: 19,
-                  fontWeight: 600,
-                  color: '#28bc8d',
-                  background: '#eafaf4',
-                  border: '1px solid #28bc8d',
-                  borderRadius: 8,
-                  padding: '18px 0',
-                  cursor: 'pointer',
-                  marginTop: 10
-                }}
-                aria-label="Find mosques near me"
-                onClick={handleFindMyLocation}
-              >
-                <span role="img" aria-label="gps" style={{ marginRight: 9, verticalAlign: '-0.18em', fontSize: 22 }}>📍</span>
-                Find mosques near me
-              </button>
-            )}
-            {locState === 'requesting' && (
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                padding: '25px 0 10px 0'
-              }}>
-                <span className="prayer-ghost-button" style={{
-                  color: '#28bc8d',
-                  fontWeight: 600,
-                  fontSize: 17,
-                  padding: '14px 18px',
-                  background: '#eafaf4',
-                  borderRadius: 6,
-                  border: '1px solid #c8f2e4',
-                  marginBottom: 10
-                }}>
-                  <svg width="22" height="22" viewBox="0 0 50 50" style={{verticalAlign:'middle'}}>
-                    <circle cx="25" cy="25" r="21" fill="none" stroke="#28bc8d" strokeWidth="6" style={{ opacity: 0.15 }}/>
-                    <path fill="#28bc8d" d="M47 25c0-12.1-9.9-22-22-22v6c8.8 0 16 7.2 16 16h6z">
-                      <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s" repeatCount="indefinite"/>
-                    </path>
-                  </svg>
-                  <span style={{marginLeft:10}}>Requesting your location…</span>
-                </span>
-                <div style={{
-                  color: '#555',
-                  fontSize: 15,
-                  textAlign: 'center',
-                  marginTop: 7
-                }}>
-                  Please allow location access if prompted.
-                </div>
+              marginTop: 0,
+              marginBottom: 18,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              padding: 0,
+            }}>
+            <div
+              className="prayer-summary-header"
+              style={{ width: "100%", gap: 12, flexDirection: "column", alignItems: "center" }}
+            >
+              <div style={{ marginBottom: 14, marginTop: 12 }}>
+                <button
+                  className="method-select"
+                  style={{
+                    width: 170,
+                    fontWeight: 600,
+                    fontSize: 16,
+                    letterSpacing: "0.03em",
+                    background: "#28bc8d",
+                    color: "#fff",
+                    border: 0,
+                    borderRadius: 6,
+                    padding: "10px 0",
+                    cursor: status === "loading" ? "not-allowed" : "pointer",
+                    opacity: status === "loading" ? 0.7 : 1,
+                  }}
+                  onClick={getLocation}
+                  disabled={status === "loading"}
+                >
+                  {coords ? "Detect Again" : "Detect Qibla"}
+                </button>
               </div>
-            )}
+              <div style={{ minHeight: 120, marginBottom: 6, width: "100%" }}>
+                {(!coords || bearing == null) ? (
+                  <QiblaStatusScreen
+                    status={status}
+                    error={error}
+                    onRetry={getLocation}
+                  />
+                ) : (
+                  <QiblaResults coords={coords} bearing={bearing} />
+                )}
+              </div>
+            </div>
           </div>
-
-          {/* Loading mosques */}
-          {locState === 'granted' && loading && (
-            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 22 }}>
-              <span className="prayer-ghost-button" style={{cursor:'wait', color:'#28bc8d', fontWeight:600, fontSize:17, padding: '14px 18px', background: '#eafaf4', borderRadius:6, border: '1px solid #c8f2e4' }}>
-                <svg width="22" height="22" viewBox="0 0 50 50" style={{verticalAlign:'middle'}}>
-                  <circle cx="25" cy="25" r="21" fill="none" stroke="#28bc8d" strokeWidth="6" style={{ opacity: 0.15 }}/>
-                  <path fill="#28bc8d" d="M47 25c0-12.1-9.9-22-22-22v6c8.8 0 16 7.2 16 16h6z">
-                    <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s" repeatCount="indefinite"/>
-                  </path>
-                </svg>
-                <span style={{marginLeft:10}}>Loading mosques…</span>
-              </span>
-            </div>
-          )}
-
-          {/* Error states */}
-          {(locState === 'denied' || (locState === 'granted' && error)) && (
-            <div style={{ color: '#d72638', fontWeight: 600, margin: "18px 0", textAlign:'center' }}>
-              {error || 'Unable to use location.'}
-            </div>
-          )}
-
-          {/* No mosques found */}
-          {locState === 'granted' && !loading && empty && !error && (
-            <div style={{ color: '#444', fontWeight: 500, margin: "18px 0", textAlign:'center' }}>
-              No mosques found near your location.
-            </div>
-          )}
-
-          {/* Mosque List */}
-          {locState === 'granted' && !loading && !error && mosques.length > 0 && (
-            <MosqueList mosques={mosques} />
-          )}
         </section>
       </main>
     </div>
   )
 }
 
-export default MosqueFinder
+export default QiblaFinder

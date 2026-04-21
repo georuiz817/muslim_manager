@@ -9,6 +9,11 @@
   scroll-behavior: smooth;
 }
 
+/* Prevent width + padding overflow on small screens */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 html, body {
   margin: 0;
   padding: 0;

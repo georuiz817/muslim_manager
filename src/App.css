@@ -9,6 +9,73 @@
   color: #f5f5f5;
 }
 
+/* ================== Qibla Finder Card Responsive Fixes ================== */
+.qibla-main {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 0 0.95rem 2.25rem;
+  box-sizing: border-box;
+}
+.qibla-card {
+  width: 100%;
+  margin: 0;
+  text-align: center;
+  max-width: 100%;
+  box-sizing: border-box;
+  /* override .prayer-summary-card padding for small phones */
+  padding: 1.15rem 1rem;
+}
+
+/* Make Qibla card and children more responsive for very small phones (<390px) */
+@media (max-width: 430px) {
+  .qibla-main {
+    max-width: 100%;
+    padding: 0 0.85rem 2rem;
+  }
+  .qibla-card {
+    max-width: 100%;
+    padding: 1.05rem 0.9rem;
+  }
+  .qibla-card-inner {
+    gap: 0.5rem;
+  }
+  .qibla-results-wrap {
+    min-height: 100px;
+  }
+  .qibla-compass {
+    width: clamp(78px, 28vw, 96px);
+    height: clamp(78px, 28vw, 96px);
+  }
+  .qibla-bearing-title,
+  .qibla-direction,
+  .qibla-location,
+  .qibla-footnote {
+    font-size: 0.91rem;
+  }
+}
+
+@media (max-width: 370px) {
+  .qibla-main {
+    max-width: 100%;
+    padding: 0 0.7rem 1.75rem;
+  }
+  .qibla-card {
+    max-width: 100%;
+    padding: 0.95rem 0.8rem;
+  }
+  .qibla-compass {
+    width: clamp(72px, 30vw, 92px);
+    height: clamp(72px, 30vw, 92px);
+  }
+  .qibla-bearing-title,
+  .qibla-direction,
+  .qibla-location,
+  .qibla-footnote {
+    font-size: 0.85rem;
+  }
+}
+
 .hero {
   min-height: 100vh;
   padding: 0 1.5rem 1.75rem;
@@ -363,6 +430,173 @@
   font-size: 0.9rem;
 }
 
+/* Qibla Finder (mobile-first; optimized for Android phones) */
+/* see responsive fixes above for .qibla-main/.qibla-card */
+
+.qibla-section {
+  padding: 0;
+  margin: 0;
+}
+
+.qibla-card-inner {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.qibla-results-wrap {
+  width: 100%;
+  min-height: 140px;
+}
+
+.qibla-status-screen {
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.25rem 0;
+}
+
+.qibla-status-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.qibla-status-text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.qibla-status-text--muted {
+  color: rgba(226, 232, 240, 0.82);
+}
+
+.qibla-status-text--error {
+  color: #fecaca;
+  font-weight: 500;
+}
+
+.qibla-retry-button {
+  margin-top: 0.9rem;
+  font-weight: 650;
+  font-size: 0.95rem;
+  background: rgba(245, 245, 245, 0.16);
+  color: #f5f5f5;
+  border: 1px solid rgba(226, 232, 240, 0.45);
+  border-radius: 0.75rem;
+  padding: 0.7rem 1.1rem;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.qibla-retry-button:active {
+  transform: translateY(1px);
+}
+
+.qibla-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.qibla-accent {
+  color: #28bc8d;
+}
+
+.qibla-bearing-title {
+  margin: 0.5rem 0 0.1rem;
+  font-size: 1.15rem;
+  font-weight: 650;
+  color: #f5f5f5;
+}
+
+.qibla-bearing-from {
+  color: rgba(245, 245, 245, 0.92);
+  font-weight: 450;
+}
+
+.qibla-direction {
+  margin: 0.1rem 0 0;
+  font-size: 0.98rem;
+  color: #28bc8d;
+}
+
+.qibla-location {
+  margin: 0.55rem 0 0;
+  font-size: 0.93rem;
+  color: #28bc8d;
+}
+
+.qibla-coords {
+  font-variant-numeric: tabular-nums;
+}
+
+.qibla-footnote {
+  margin: 0.85rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: #28bc8d;
+}
+
+.qibla-compass {
+  width: clamp(94px, 26vw, 116px);
+  height: clamp(94px, 26vw, 116px);
+  border-radius: 50%;
+  background: rgba(245, 245, 245, 0.98);
+  border: 2px solid #28bc8d;
+  margin-bottom: 0.4rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(40, 188, 141, 0.14);
+}
+
+.qibla-compass-needle {
+  --qibla-rotation: 0deg;
+  transition: transform 0.6s cubic-bezier(.39, 1.01, .55, .99);
+  display: inline-block;
+  transform: rotate(var(--qibla-rotation));
+  user-select: none;
+  will-change: transform;
+}
+
+.qibla-compass-svg {
+  display: block;
+}
+
+.qibla-compass-polygon {
+  fill: #28bc8d;
+}
+
+.qibla-compass-north {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 750;
+  font-size: 0.8rem;
+  color: rgba(5, 116, 70, 0.6);
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (min-width: 640px) {
+  .qibla-main {
+    max-width: 520px;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}
+
 .prayer-list {
   max-width: 960px;
   margin: 0 auto;
@@ -647,17 +881,7 @@
   box-sizing: border-box;
 }
 
-/* Remove any specific margin/padding from .zakat-input-card/.zakat-output-card children, if present */
-.zakat-input-card {
-  /* remove previous margin values to make it uniform */
-  /* margin-top: 0; */
-  /* margin-bottom: 16px; */
-}
-
-.zakat-output-card {
-  /* remove previous margin value */
-  /* margin-top: 0; */
-}
+/* (intentionally no extra overrides for zakat cards here) */
 
 .zakat-header-column {
   flex-direction: column;
@@ -732,9 +956,6 @@
 .zakat-results-table td {
   padding: 4px 0;
 }
-
-.zakat-results-table td:first-child {
- }
 
 .zakat-results-table td:last-child {
   text-align: right;
