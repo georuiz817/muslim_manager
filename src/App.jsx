@@ -47,17 +47,14 @@ function App() {
           <div className="cards-grid">
             <a className="feature-card feature-card-link" href="/prayer-times">
               <h2>{t("features.prayer.title")}</h2>
-              <p>{t("features.prayer.description")}</p>
             </a>
 
             <a className="feature-card feature-card-link" href="/zakat-calc">
               <h2>{t("features.zakat.title")}</h2>
-              <p>{t("features.zakat.description")}</p>
             </a>
 
             <a className="feature-card feature-card-link" href="/qibla-finder">
               <h2>{t("features.qibla.title")}</h2>
-              <p>{t("features.qibla.description")}</p>
             </a>
           </div>
         </div>

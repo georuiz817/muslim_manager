@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import homeIcon from './images/freeiconVector.webp'
 import logoNav from './images/white_moon_icon.png'
+import { useLanguage } from './context/LanguageContext.jsx'
 
 function ZakatCalc() {
+  const { t, lang, setLang } = useLanguage()
 
   const [cash, setCash] = useState('')
   const [gold, setGold] = useState('')
@@ -15,7 +17,7 @@ function ZakatCalc() {
 
   const [nisabType, setNisabType] = useState('gold')
   const [nisabValue, setNisabValue] = useState('')
-6
+
   const [goldPricePerGram, setGoldPricePerGram] = useState(null)
   const [silverPricePerGram, setSilverPricePerGram] = useState(null)
 
@@ -113,8 +115,19 @@ function ZakatCalc() {
             </div>
             <ul className="nav-links">
               <li>
+                <select
+                  className="lang-toggle"
+                  aria-label="Language"
+                  value={lang}
+                  onChange={(e) => setLang(e.target.value)}
+                >
+                  <option value="en">🇬🇧 English</option>
+                  <option value="bn">🇧🇩 বাংলা</option>
+                </select>
+              </li>
+              <li>
                 <a href="/">
-                  <img src={homeIcon} alt="Home" />
+                  <img src={homeIcon} alt={t('nav.homeAlt')} />
                 </a>
               </li>
             </ul>
@@ -122,8 +135,8 @@ function ZakatCalc() {
         </nav>
 
         <div className="hero-content">
-          <p className="hero-tagline">Zakat Calculator</p>
-          <h1 className="hero-title">See your price</h1>
+          <p className="hero-tagline">{t('zakatCalc.heroTagline')}</p>
+          <h1 className="hero-title">{t('zakatCalc.heroTitle')}</h1>
         </div>
       </header>
 
@@ -140,26 +153,25 @@ function ZakatCalc() {
               <div>
 
                 <p className="prayer-summary-title">
-                  Enter Your Amounts
+                  {t('zakatCalc.input.title')}
                 </p>
 
-
-                <div className="prayer-summary-hijri" style={{ marginBottom: '0.5em' }}>
-                  Gold:
+                <div className="prayer-summary-hijri zakat-market-prices">
+                  {t('zakatCalc.marketPrices.goldLabel')}
                   {
                     typeof goldPricePerGram === 'number'
                       ? ` $${goldPricePerGram.toFixed(2)}`
                       : ' ...'
                   }
-                  / g
+                  {t('zakatCalc.marketPrices.perGramSuffix')}
                   &nbsp;&nbsp;
-                  Silver:
+                  {t('zakatCalc.marketPrices.silverLabel')}
                   {
                     typeof silverPricePerGram === 'number'
                       ? ` $${silverPricePerGram.toFixed(2)}`
                       : ' ...'
                   }
-                  / g
+                  {t('zakatCalc.marketPrices.perGramSuffix')}
                 </div>
 
 
@@ -169,7 +181,7 @@ function ZakatCalc() {
                     <tr>
                       <td>
                         <label className="prayer-summary-hijri" htmlFor="cash">
-                          Cash & Savings
+                          {t('zakatCalc.input.cash')}
                         </label>
                       </td>
                       <td>
@@ -181,7 +193,7 @@ function ZakatCalc() {
                           inputMode="decimal"
                           value={cash}
                           onChange={e => setCash(e.target.value)}
-                          placeholder="0"
+                          placeholder={t('zakatCalc.input.placeholder')}
                         />
                       </td>
                     </tr>
@@ -190,7 +202,7 @@ function ZakatCalc() {
                     <tr>
                       <td>
                         <label className="prayer-summary-hijri" htmlFor="gold">
-                          Gold value
+                          {t('zakatCalc.input.gold')}
                         </label>
                       </td>
                       <td>
@@ -202,7 +214,7 @@ function ZakatCalc() {
                           inputMode="decimal"
                           value={gold}
                           onChange={e => setGold(e.target.value)}
-                          placeholder="0"
+                          placeholder={t('zakatCalc.input.placeholder')}
                         />
                       </td>
                     </tr>
@@ -211,7 +223,7 @@ function ZakatCalc() {
                     <tr>
                       <td>
                         <label className="prayer-summary-hijri" htmlFor="silver">
-                          Silver value
+                          {t('zakatCalc.input.silver')}
                         </label>
                       </td>
                       <td>
@@ -223,7 +235,7 @@ function ZakatCalc() {
                           inputMode="decimal"
                           value={silver}
                           onChange={e => setSilver(e.target.value)}
-                          placeholder="0"
+                          placeholder={t('zakatCalc.input.placeholder')}
                         />
                       </td>
                     </tr>
@@ -232,7 +244,7 @@ function ZakatCalc() {
                     <tr>
                       <td>
                         <label className="prayer-summary-hijri" htmlFor="investments">
-                          Investments / Business assets
+                          {t('zakatCalc.input.investments')}
                         </label>
                       </td>
                       <td>
@@ -244,7 +256,7 @@ function ZakatCalc() {
                           inputMode="decimal"
                           value={investments}
                           onChange={e => setInvestments(e.target.value)}
-                          placeholder="0"
+                          placeholder={t('zakatCalc.input.placeholder')}
                         />
                       </td>
                     </tr>
@@ -253,7 +265,7 @@ function ZakatCalc() {
                     <tr>
                       <td>
                         <label className="prayer-summary-hijri" htmlFor="otherAssets">
-                          Other zakatable assets
+                          {t('zakatCalc.input.otherAssets')}
                         </label>
                       </td>
                       <td>
@@ -265,7 +277,7 @@ function ZakatCalc() {
                           inputMode="decimal"
                           value={otherAssets}
                           onChange={e => setOtherAssets(e.target.value)}
-                          placeholder="0"
+                          placeholder={t('zakatCalc.input.placeholder')}
                         />
                       </td>
                     </tr>
@@ -274,7 +286,7 @@ function ZakatCalc() {
                     <tr>
                       <td>
                         <label className="prayer-summary-hijri" htmlFor="liabilities">
-                          Minus: Short-term debts / bills
+                          {t('zakatCalc.input.liabilities')}
                         </label>
                       </td>
                       <td>
@@ -286,7 +298,7 @@ function ZakatCalc() {
                           inputMode="decimal"
                           value={liabilities}
                           onChange={e => setLiabilities(e.target.value)}
-                          placeholder="0"
+                          placeholder={t('zakatCalc.input.placeholder')}
                         />
                       </td>
                     </tr>
@@ -300,7 +312,7 @@ function ZakatCalc() {
               <div className="zakat-nisab-section">
 
                 <span className="prayer-summary-hijri zakat-nisab-label">
-                  Nisab:
+                  {t('zakatCalc.nisab.label')}
                 </span>
 
 
@@ -313,7 +325,7 @@ function ZakatCalc() {
                     onChange={() => setNisabType('gold')}
                     className="zakat-radio-input"
                   />
-                  Gold (87.48g)
+                  {t('zakatCalc.nisab.goldOption')}
                 </label>
 
 
@@ -326,7 +338,7 @@ function ZakatCalc() {
                     onChange={() => setNisabType('silver')}
                     className="zakat-radio-input"
                   />
-                  Silver (612.36g)
+                  {t('zakatCalc.nisab.silverOption')}
                 </label>
 
 
@@ -348,7 +360,7 @@ function ZakatCalc() {
                   />
 
                   <span className="prayer-summary-hijri zakat-manual-hint">
-                    Manual amount
+                    {t('zakatCalc.nisab.manualHint')}
                   </span>
 
                 </span>
@@ -366,7 +378,7 @@ function ZakatCalc() {
 
               <div>
                 <p className="prayer-summary-title zakat-results-title">
-                  Results
+                  {t('zakatCalc.results.title')}
                 </p>
               </div>
 
@@ -378,22 +390,22 @@ function ZakatCalc() {
                   <tbody>
 
                     <tr>
-                      <td className="prayer-summary-hijri">Total Assets</td>
+                      <td className="prayer-summary-hijri">{t('zakatCalc.results.totalAssets')}</td>
                       <td>{totalAssets.toLocaleString(undefined,{maximumFractionDigits:2})}</td>
                     </tr>
 
                     <tr>
-                      <td className="prayer-summary-hijri">Less: Liabilities</td>
+                      <td className="prayer-summary-hijri">{t('zakatCalc.results.lessLiabilities')}</td>
                       <td>{totalLiabilities.toLocaleString(undefined,{maximumFractionDigits:2})}</td>
                     </tr>
 
                     <tr className="zakat-net-assets">
-                      <td className="prayer-summary-hijri">Net Zakatable Assets</td>
+                      <td className="prayer-summary-hijri">{t('zakatCalc.results.netAssets')}</td>
                       <td>{netAssets.toLocaleString(undefined,{maximumFractionDigits:2})}</td>
                     </tr>
 
                     <tr>
-                      <td className="prayer-summary-hijri">Nisab threshold</td>
+                      <td className="prayer-summary-hijri">{t('zakatCalc.results.nisabThreshold')}</td>
                       <td>{nisab.toLocaleString(undefined,{maximumFractionDigits:2})}</td>
                     </tr>
 
@@ -410,27 +422,27 @@ function ZakatCalc() {
                   !validCalculation
                     ? (
                       <span className="prayer-extra zakat-error-message">
-                        Please check your entries.
+                        {t('zakatCalc.messages.invalid')}
                       </span>
                     )
                     : !zakatOwed
                     ? (
                       <span className="prayer-extra zakat-not-due-message">
-                        Zakat is not due (below nisab).
+                        {t('zakatCalc.messages.notDue')}
                       </span>
                     )
                     : (
                       <div>
 
                         <span className="prayer-extra zakat-due-message">
-                          Zakat due:
+                          {t('zakatCalc.messages.dueLabel')}
                           <span className="zakat-due-amount">
                             {zakatDue.toLocaleString(undefined,{maximumFractionDigits:2})}
                           </span>
                         </span>
 
                         <div className="prayer-extra zakat-note">
-                          (2.5% of your eligible assets)
+                          {t('zakatCalc.messages.note')}
                         </div>
 
                       </div>

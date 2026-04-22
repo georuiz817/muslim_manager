@@ -19,5 +19,112 @@
       "title": "Mecca Finder",
       "description": "Find the Qibla direction from wherever you are in the world."
     }
+  },
+  "qiblaFinder": {
+    "heroTagline": "Mecca Finder",
+    "heroTitle": "Your Direction For Prayer",
+    "status": {
+      "idle": "Attempting to detect your location…",
+      "loading": "Detecting your location…",
+      "retry": "Retry"
+    },
+    "errors": {
+      "unsupported": "Geolocation not supported by your browser.",
+      "permissionDenied": "Permission denied. Please allow location access.",
+      "unavailable": "Location unavailable.",
+      "unknown": "Could not retrieve location."
+    },
+    "results": {
+      "bearingLabel": "Qibla Bearing:",
+      "fromNorth": "from north",
+      "directionLabel": "Direction:",
+      "yourLocationLabel": "Your Location:",
+      "footnoteLine1": "Face this direction when you pray.",
+      "footnoteLine2": "Kaaba in Makkah is at 21.4225°N, 39.8262°E"
+    }
+  },
+  "zakatCalc": {
+    "heroTagline": "Zakat Calculator",
+    "heroTitle": "See your price",
+    "input": {
+      "title": "Enter Your Amounts",
+      "placeholder": "0",
+      "cash": "Cash & Savings",
+      "gold": "Gold value",
+      "silver": "Silver value",
+      "investments": "Investments / Business assets",
+      "otherAssets": "Other zakatable assets",
+      "liabilities": "Minus: Short-term debts / bills"
+    },
+    "marketPrices": {
+      "goldLabel": "Gold:",
+      "silverLabel": "Silver:",
+      "perGramSuffix": " / g"
+    },
+    "nisab": {
+      "label": "Nisab:",
+      "goldOption": "Gold (87.48g)",
+      "silverOption": "Silver (612.36g)",
+      "manualHint": "Manual amount"
+    },
+    "results": {
+      "title": "Results",
+      "totalAssets": "Total Assets",
+      "lessLiabilities": "Less: Liabilities",
+      "netAssets": "Net Zakatable Assets",
+      "nisabThreshold": "Nisab threshold"
+    },
+    "messages": {
+      "invalid": "Please check your entries.",
+      "notDue": "Zakat is not due (below nisab).",
+      "dueLabel": "Zakat due:",
+      "note": "(2.5% of your eligible assets)"
+    }
+  },
+  "prayerTimes": {
+    "heroTagline": "Prayer Times",
+    "heroTitle": "Daily Salah schedule",
+    "fallbackNotice": "📍 Location access denied — showing times for Dhaka, Bangladesh. Enable location for accurate times.",
+    "filters": {
+      "source": "Source",
+      "asr": "ASR"
+    },
+    "status": {
+      "locating": "Getting your location…",
+      "loading": "Loading prayer times…"
+    },
+    "errors": {
+      "failedToLoad": "Failed to load prayer times",
+      "unableToLoad": "Unable to load prayer times right now."
+    },
+    "hijriLoading": "Hijri date loading...",
+    "next": {
+      "loading": "Loading next prayer...",
+      "done": "All prayers for today completed.",
+      "nextPrefix": "Next:",
+      "in": "in"
+    },
+    "countdownLabel": "Countdown",
+    "sunrisePlaceholder": "—",
+    "ramadan": {
+      "title": "🌙 Ramadan Mubarak",
+      "fastStartLabel": "Fast Start (Suhoor ends):",
+      "fastBreakLabel": "Fast Break (Iftar):",
+      "status": {
+        "beginsIn": "Fasting begins in",
+        "iftarIn": "Iftar in",
+        "completed": "Fasting completed for today"
+      },
+      "extras": {
+        "startFasting": "🕊️ Start of fasting",
+        "breakFast": "🍽️ Time to break fast (Iftar)",
+        "taraweeh": "🌙 Taraweeh prayer after Isha"
+      }
+    },
+    "extras": {
+      "sunrise": "🌅 Not obligatory",
+      "fajr": "Remember to perform Wudu.",
+      "dhuhr": "Daily Hadith: \"Prayer is light for the believer.\""
+    }
   }
 }

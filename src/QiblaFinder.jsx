@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react"
 import logoNav from './images/white_moon_icon.png'
 import homeIcon from './images/freeiconVector.webp'
+import { useLanguage } from './context/LanguageContext.jsx'
 
 // --- Qibla utility: bearing formula (great-circle) ---
 const KAABA_LAT = 21.4225
@@ -22,7 +23,7 @@ function getQiblaBearing(lat, lon) {
 }
 
 // --- Custom React hook for geolocation, now triggers automatically ---
-function useGeolocation() {
+function useGeolocation(t) {
   const [coords, setCoords] = useState(null)
   const [status, setStatus] = useState('idle') // idle | loading | success | error
   const [error, setError] = useState(null)
@@ -32,7 +33,7 @@ function useGeolocation() {
     setError(null)
     setCoords(null)
     if (!navigator.geolocation) {
-      setError('Geolocation not supported by your browser.')
+      setError(t('qiblaFinder.errors.unsupported'))
       setStatus('error')
       return
     }
@@ -45,12 +46,9 @@ function useGeolocation() {
         setStatus('success')
       },
       err => {
-        if (err.code === 1)
-          setError("Permission denied. Please allow location access.")
-        else if (err.code === 2)
-          setError("Location unavailable.")
-        else
-          setError("Could not retrieve location.")
+        if (err.code === 1) setError(t('qiblaFinder.errors.permissionDenied'))
+        else if (err.code === 2) setError(t('qiblaFinder.errors.unavailable'))
+        else setError(t('qiblaFinder.errors.unknown'))
         setStatus('error')
       },
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }
@@ -65,7 +63,7 @@ function useGeolocation() {
     setError(null)
     setCoords(null)
     if (!navigator.geolocation) {
-      setError('Geolocation not supported by your browser.')
+      setError(t('qiblaFinder.errors.unsupported'))
       setStatus('error')
       return
     }
@@ -78,12 +76,9 @@ function useGeolocation() {
         setStatus('success')
       },
       err => {
-        if (err.code === 1)
-          setError("Permission denied. Please allow location access.")
-        else if (err.code === 2)
-          setError("Location unavailable.")
-        else
-          setError("Could not retrieve location.")
+        if (err.code === 1) setError(t('qiblaFinder.errors.permissionDenied'))
+        else if (err.code === 2) setError(t('qiblaFinder.errors.unavailable'))
+        else setError(t('qiblaFinder.errors.unknown'))
         setStatus('error')
       },
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }
@@ -134,18 +129,18 @@ function bearingToDirection(bearing) {
 }
 
 // --- Status/Error Screen component ---
-function QiblaStatusScreen({ status, error, onRetry }) {
+function QiblaStatusScreen({ status, error, onRetry, t }) {
   return (
     <div className="qibla-status-screen">
       {status === "idle" && (
         <p className="qibla-status-text qibla-status-text--muted">
-          Attempting to detect your location…
+          {t('qiblaFinder.status.idle')}
         </p>
       )}
 
       {status === "loading" && (
         <p className="qibla-status-text qibla-status-text--muted">
-          Detecting your location…
+          {t('qiblaFinder.status.loading')}
         </p>
       )}
 
@@ -153,7 +148,7 @@ function QiblaStatusScreen({ status, error, onRetry }) {
         <div className="qibla-status-error">
           <p className="qibla-status-text qibla-status-text--error">{error}</p>
           <button className="qibla-retry-button" onClick={onRetry} type="button">
-            Retry
+            {t('qiblaFinder.status.retry')}
           </button>
         </div>
       )}
@@ -162,22 +157,24 @@ function QiblaStatusScreen({ status, error, onRetry }) {
 }
 
 // --- Qibla Result Screen: shows everything if ready ---
-function QiblaResults({ coords, bearing }) {
+function QiblaResults({ coords, bearing, t }) {
   return (
     <div className="qibla-results">
       <CompassArrow bearing={bearing} />
       <p className="qibla-bearing-title">
-        Qibla Bearing: <span className="qibla-accent">{bearing}°</span>{" "}
-        <span className="qibla-bearing-from">from north</span>
+        {t('qiblaFinder.results.bearingLabel')}{' '}
+        <span className="qibla-accent">{bearing}°</span>{' '}
+        <span className="qibla-bearing-from">{t('qiblaFinder.results.fromNorth')}</span>
       </p>
 
       <p className="qibla-direction">
-        Direction: <strong>{bearingToDirection(bearing)}</strong>
+        {t('qiblaFinder.results.directionLabel')}{' '}
+        <strong>{bearingToDirection(bearing)}</strong>
       </p>
 
       {coords && (
         <p className="qibla-location">
-          Your Location:{" "}
+          {t('qiblaFinder.results.yourLocationLabel')}{' '}
           <span className="qibla-coords">
             {coords.latitude.toFixed(5)}, {coords.longitude.toFixed(5)}
           </span>
@@ -185,9 +182,9 @@ function QiblaResults({ coords, bearing }) {
       )}
 
       <p className="qibla-footnote">
-        Face this direction when you pray.
+        {t('qiblaFinder.results.footnoteLine1')}
         <br />
-        <span className="qibla-accent">*</span> Kaaba in Makkah is at 21.4225°N, 39.8262°E
+        <span className="qibla-accent">*</span> {t('qiblaFinder.results.footnoteLine2')}
       </p>
     </div>
   )
@@ -195,8 +192,9 @@ function QiblaResults({ coords, bearing }) {
 
 // --- Main QiblaFinder, can be used standalone or imported in App.jsx ---
 function QiblaFinder() {
+  const { t, lang, setLang } = useLanguage()
   // Use custom hook
-  const { coords, status, error, getLocation } = useGeolocation()
+  const { coords, status, error, getLocation } = useGeolocation(t)
   const [bearing, setBearing] = useState(null)
 
   // Compute bearing whenever coords change
@@ -221,10 +219,21 @@ function QiblaFinder() {
             </div>
             <ul className="nav-links">
               <li>
+                <select
+                  className="lang-toggle"
+                  aria-label="Language"
+                  value={lang}
+                  onChange={(e) => setLang(e.target.value)}
+                >
+                  <option value="en">🇬🇧 English</option>
+                  <option value="bn">🇧🇩 বাংলা</option>
+                </select>
+              </li>
+              <li>
                 <a href="/">
                   <img
                     src={homeIcon}
-                    alt="Home"
+                    alt={t('nav.homeAlt')}
                   />
                 </a>
               </li>
@@ -233,8 +242,8 @@ function QiblaFinder() {
           </div>
         </nav>
         <div className="hero-content">
-          <p className="hero-tagline">Mecca Finder</p>
-          <h1 className="hero-title"> Your Direction For Prayer</h1>
+          <p className="hero-tagline">{t('qiblaFinder.heroTagline')}</p>
+          <h1 className="hero-title">{t('qiblaFinder.heroTitle')}</h1>
 
         </div>
       </header>
@@ -254,9 +263,10 @@ function QiblaFinder() {
                     status={status}
                     error={error}
                     onRetry={getLocation}
+                    t={t}
                   />
                 ) : (
-                  <QiblaResults coords={coords} bearing={bearing} />
+                  <QiblaResults coords={coords} bearing={bearing} t={t} />
                 )}
               </div>
             </div>

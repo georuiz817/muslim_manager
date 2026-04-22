@@ -282,6 +282,7 @@
   gap: 1.5rem;
   /* Default: stack cards for mobile + tablets (one column) */
   grid-template-columns: 1fr;
+  margin-top: 2.25rem;
   text-align: left;
 }
 
@@ -308,8 +309,8 @@
 }
 
 .feature-card h2 {
-  margin: 0 0 0.5rem;
-  font-size: 1.25rem;
+  margin: 0;
+  font-size: 1.35rem;
   color: #d4af37;
 }
 
@@ -317,6 +318,20 @@
   margin: 0;
   color: #f5f5f5;
   font-size: 0.96rem;
+}
+
+/* Home cards: title-only layout */
+.hero--home .feature-card {
+  text-align: center;
+  display: grid;
+  place-items: center;
+  min-height: 118px;
+}
+
+.hero--home .feature-card h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  line-height: 1.15;
 }
 
 .feature-card-link:hover {
@@ -756,7 +771,7 @@
   }
 
   .hero--home .cards-grid {
-    margin-top: 2.75rem;
+    margin-top: 3.25rem;
     gap: 1.85rem;
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -767,8 +782,8 @@
   }
 
   .hero--home .feature-card h2 {
-    font-size: 1.5rem;
-    margin-bottom: 0.65rem;
+    font-size: 1.85rem;
+    margin-bottom: 0;
   }
 
   .hero--home .feature-card p {
@@ -980,6 +995,10 @@
 .zakat-results-table td:last-child {
   text-align: right;
   font-weight: 600;
+}
+
+.zakat-market-prices {
+  margin-bottom: 0.5em;
 }
 
 .zakat-net-assets {

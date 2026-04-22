@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 import homeIcon from './images/freeiconVector.webp'
 import logoNav from './images/white_moon_icon.png'
+import { useLanguage } from './context/LanguageContext.jsx'
 
 // 🔧 dev-only: set false in production
 const FORCE_RAMADAN = false
@@ -38,6 +39,7 @@ function formatCountdown(from, to) {
 }
 
 function PrayerTimes() {
+  const { t, lang, setLang } = useLanguage()
   const [methodId, setMethodId] = useState(3)
   const [asrSchool, setAsrSchool] = useState(0)
   const [now, setNow] = useState(() => new Date())
@@ -75,7 +77,7 @@ function PrayerTimes() {
         const json = await response.json()
 
         if (json.code !== 200) {
-          throw new Error(json.data || 'Failed to load prayer times')
+          throw new Error(json.data || t('prayerTimes.errors.failedToLoad'))
         }
 
         setTimings(json.data.timings)
@@ -88,7 +90,7 @@ function PrayerTimes() {
 
         setHijriInfo(hijri)
       } catch (err) {
-        setError(err.message || 'Unable to load prayer times right now.')
+        setError(err?.message || t('prayerTimes.errors.unableToLoad'))
       } finally {
         setLoading(false)
       }
@@ -124,14 +126,14 @@ function PrayerTimes() {
   let ramadanFastCountdown = null
   if (isRamadan && fajrTime && maghribTime) {
     if (now < fajrTime) {
-      ramadanFastStatus = 'Fasting begins in'
+      ramadanFastStatus = t('prayerTimes.ramadan.status.beginsIn')
       ramadanFastCountdown = formatCountdown(now, fajrTime)
     } else if (now >= fajrTime && now < maghribTime) {
-      ramadanFastStatus = 'Iftar in'
+      ramadanFastStatus = t('prayerTimes.ramadan.status.iftarIn')
       ramadanFastCountdown = formatCountdown(now, maghribTime)
     } else {
       // now >= maghribTime — fasting done for today
-      ramadanFastStatus = 'Fasting completed for today'
+      ramadanFastStatus = t('prayerTimes.ramadan.status.completed')
       ramadanFastCountdown = null
     }
   }
@@ -153,13 +155,13 @@ function PrayerTimes() {
 
   const hijriDisplay = hijriInfo
     ? `${hijriInfo.day} ${hijriInfo.month?.en} ${hijriInfo.year} AH`
-    : 'Hijri date loading...'
+    : t('prayerTimes.hijriLoading')
 
   const nextSummaryLabel = !parsedPrayers.length
-    ? 'Loading next prayer...'
+    ? t('prayerTimes.next.loading')
     : !nextPrayer || nextCountdown === 'Passed'
-    ? 'All prayers for today completed.'
-    : `Next: ${nextPrayer.name} in ${nextCountdown || ''}`
+    ? t('prayerTimes.next.done')
+    : `${t('prayerTimes.next.nextPrefix')} ${nextPrayer.name} ${t('prayerTimes.next.in')} ${nextCountdown || ''}`
 
   return (
     <div className="page">
@@ -171,8 +173,19 @@ function PrayerTimes() {
             </div>
             <ul className="nav-links">
               <li>
+                <select
+                  className="lang-toggle"
+                  aria-label="Language"
+                  value={lang}
+                  onChange={(e) => setLang(e.target.value)}
+                >
+                  <option value="en">🇬🇧 English</option>
+                  <option value="bn">🇧🇩 বাংলা</option>
+                </select>
+              </li>
+              <li>
                 <a href="/">
-                  <img src={homeIcon} alt="Home" />
+                  <img src={homeIcon} alt={t('nav.homeAlt')} />
                 </a>
               </li>
             </ul>
@@ -180,8 +193,8 @@ function PrayerTimes() {
         </nav>
 
         <div className="hero-content prayer-hero">
-          <p className="hero-tagline">Prayer Times</p>
-          <h1 className="hero-title">Daily Salah schedule</h1>
+          <p className="hero-tagline">{t('prayerTimes.heroTagline')}</p>
+          <h1 className="hero-title">{t('prayerTimes.heroTitle')}</h1>
         </div>
       </header>
 
@@ -191,14 +204,14 @@ function PrayerTimes() {
           {/* Location notice when using fallback */}
           {usingFallback && !locating && (
             <p className="prayer-status prayer-status-warning">
-              📍 Location access denied — showing times for Dhaka, Bangladesh. Enable location for accurate times.
+              {t('prayerTimes.fallbackNotice')}
             </p>
           )}
 
           <div className="method-row">
             <div className="method-group">
               <label className="method-label" htmlFor="method-select">
-                Source
+                {t('prayerTimes.filters.source')}
               </label>
               <select
                 id="method-select"
@@ -215,7 +228,7 @@ function PrayerTimes() {
             </div>
             <div className="method-group">
               <label className="method-label" htmlFor="asr-select">
-                ASR
+                {t('prayerTimes.filters.asr')}
               </label>
               <select
                 id="asr-select"
@@ -236,17 +249,17 @@ function PrayerTimes() {
           {isRamadan && (
             <div className="prayer-summary-card ramadan-banner">
               <div className="ramadan-banner-content">
-                <span className="ramadan-banner-title">🌙 Ramadan Mubarak</span>
+                <span className="ramadan-banner-title">{t('prayerTimes.ramadan.title')}</span>
                 <span className="ramadan-banner-date">{hijriDisplay}</span>
                 <div className="ramadan-banner-times">
                   <div>
-                    <strong>Fast Start (Suhoor ends):</strong>{' '}
+                    <strong>{t('prayerTimes.ramadan.fastStartLabel')}</strong>{' '}
                     {fajrTime
                       ? fajrTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                       : '--'}
                   </div>
                   <div>
-                    <strong>Fast Break (Iftar):</strong>{' '}
+                    <strong>{t('prayerTimes.ramadan.fastBreakLabel')}</strong>{' '}
                     {maghribTime
                       ? maghribTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                       : '--'}
@@ -273,7 +286,7 @@ function PrayerTimes() {
           <div className="prayer-list">
             {(locating || loading) && (
               <p className="prayer-status">
-                {locating ? 'Getting your location…' : 'Loading prayer times…'}
+                {locating ? t('prayerTimes.status.locating') : t('prayerTimes.status.loading')}
               </p>
             )}
             {error && !loading && (
@@ -290,18 +303,18 @@ function PrayerTimes() {
                 if (isRamadan) {
                   if (p.name === 'Fajr') {
                     ramadanExtra = (
-                      <span className="prayer-extra-ramadan-fajr">🕊️ Start of fasting</span>
+                      <span className="prayer-extra-ramadan-fajr">{t('prayerTimes.ramadan.extras.startFasting')}</span>
                     )
                   } else if (p.name === 'Maghrib') {
                     ramadanExtra = (
                       <span className="prayer-extra-ramadan-maghrib">
-                        🍽️ Time to break fast (Iftar)
+                        {t('prayerTimes.ramadan.extras.breakFast')}
                       </span>
                     )
                   } else if (p.name === 'Isha') {
                     ramadanExtra = (
                       <span className="prayer-extra-ramadan-isha">
-                        🌙 Taraweeh prayer after Isha
+                        {t('prayerTimes.ramadan.extras.taraweeh')}
                       </span>
                     )
                   }
@@ -309,11 +322,11 @@ function PrayerTimes() {
 
                 const extra =
                   p.name === 'Sunrise'
-                    ? '🌅 Not obligatory'
+                    ? t('prayerTimes.extras.sunrise')
                     : p.name === 'Fajr'
-                    ? 'Remember to perform Wudu.'
+                    ? t('prayerTimes.extras.fajr')
                     : p.name === 'Dhuhr'
-                    ? 'Daily Hadith: "Prayer is light for the believer."'
+                    ? t('prayerTimes.extras.dhuhr')
                     : null
 
                 return (
@@ -325,10 +338,10 @@ function PrayerTimes() {
                       </div>
                       <div className="prayer-countdown-block">
                         {p.name !== 'Sunrise' && (
-                          <p className="prayer-countdown-label">Countdown</p>
+                          <p className="prayer-countdown-label">{t('prayerTimes.countdownLabel')}</p>
                         )}
                         <p className="prayer-countdown-value">
-                          {p.name === 'Sunrise' ? '—' : countdown}
+                          {p.name === 'Sunrise' ? t('prayerTimes.sunrisePlaceholder') : countdown}
                         </p>
                       </div>
                     </div>
