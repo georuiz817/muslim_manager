@@ -49,12 +49,12 @@ function App() {
               <h2>{t("features.prayer.title")}</h2>
             </a>
 
-            <a className="feature-card feature-card-link" href="/zakat-calc">
-              <h2>{t("features.zakat.title")}</h2>
-            </a>
-
             <a className="feature-card feature-card-link" href="/qibla-finder">
               <h2>{t("features.qibla.title")}</h2>
+            </a>
+
+            <a className="feature-card feature-card-link" href="/zakat-calc">
+              <h2>{t("features.zakat.title")}</h2>
             </a>
           </div>
         </div>
