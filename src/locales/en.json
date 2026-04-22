@@ -40,7 +40,8 @@
       "directionLabel": "Direction:",
       "yourLocationLabel": "Your Location:",
       "footnoteLine1": "Face this direction when you pray.",
-      "footnoteLine2": "Kaaba in Makkah is at 21.4225°N, 39.8262°E"
+      "footnoteLine2": "Kaaba in Makkah is at 21.4225°N, 39.8262°E",
+      "faceMecca": "Face the Mecca marker direction to pray."
     }
   },
   "zakatCalc": {
