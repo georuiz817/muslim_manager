@@ -1,0 +1,23 @@
+{
+  "nav": {
+    "homeAlt": "Home"
+  },
+  "header": {
+    "title": "Muslim Manager",
+    "subtitle": "Manage Your Faith"
+  },
+  "features": {
+    "prayer": {
+      "title": "Prayer Times",
+      "description": "Accurate daily salah times"
+    },
+    "zakat": {
+      "title": "Zakat Calculator",
+      "description": "Quickly calculate your Zakat."
+    },
+    "qibla": {
+      "title": "Mecca Finder",
+      "description": "Find the Qibla direction from wherever you are in the world."
+    }
+  }
+}
