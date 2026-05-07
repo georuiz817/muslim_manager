@@ -45,8 +45,7 @@
     }
   },
   "zakatCalc": {
-    "heroTagline": "Zakat Calculator",
-    "heroTitle": "See your price",
+    "heroTitle": "Zakat Calculator",
     "input": {
       "title": "Enter Your Amounts",
       "placeholder": "0",

@@ -1,4 +1,15 @@
 :root {
+  --bg-page: #0d2818;
+  --bg-card: #132e1c;
+  --bg-card-hover: #1a3d24;
+  --gold: #d4af37;
+  --gold-subtle: rgba(212, 175, 55, 0.12);
+  --gold-border: rgba(212, 175, 55, 0.2);
+  --gold-border-hover: rgba(212, 175, 55, 0.5);
+  --text-primary: #f5f0e8;
+  --text-muted: rgba(245, 240, 232, 0.5);
+  --text-hint: rgba(245, 240, 232, 0.25);
+
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -19,23 +30,27 @@ html, body {
   padding: 0;
   width: 100%;
   min-height: 100vh;
-  background: #0b3d2e; /* Match your page background */
+  background: var(--bg-page);
 }
 
 body {
-  /* This ensures content fills the whole screen including under nav bars */
   min-height: 100vh;
-  background: transparent;
   min-width: 320px;
-
 }
-
-
 
 button {
   font-family: inherit;
 }
 
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 1.5px solid var(--gold);
+  outline-offset: 2px;
+}
 
-/* Add to your existing app.css at the bottom */
- 
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-hint);
+}

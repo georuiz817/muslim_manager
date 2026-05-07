@@ -107,7 +107,7 @@ function ZakatCalc() {
   return (
     <div className="page">
 
-      <header className="hero hero--compact" id="top">
+      <header className="hero hero--compact hero--zakat" id="top">
         <nav className="nav">
           <div className="nav-inner">
             <div className="nav-logo">
@@ -135,7 +135,6 @@ function ZakatCalc() {
         </nav>
 
         <div className="hero-content">
-          <p className="hero-tagline">{t('zakatCalc.heroTagline')}</p>
           <h1 className="hero-title">{t('zakatCalc.heroTitle')}</h1>
         </div>
       </header>

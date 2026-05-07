@@ -45,8 +45,7 @@
     }
   },
   "zakatCalc": {
-    "heroTagline": "যাকাত ক্যালকুলেটর",
-    "heroTitle": "আপনার হিসাব দেখুন",
+    "heroTitle": "যাকাত ক্যালকুলেটর",
     "input": {
       "title": "আপনার পরিমাণ লিখুন",
       "placeholder": "0",

@@ -2,11 +2,8 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background:
-    radial-gradient(circle at top left, rgba(212, 175, 55, 0.22), transparent 55%),
-    radial-gradient(circle at bottom right, rgba(32, 201, 151, 0.25), transparent 60%),
-    linear-gradient(135deg, #0b3d2e 0%, #0b3d2e 40%, #3a6ea5 100%);
-  color: #f5f5f5;
+  background: var(--bg-page);
+  color: var(--text-muted);
 }
 
 /* ================== Qibla Finder Card Responsive Fixes ================== */
@@ -98,7 +95,7 @@
   font-size: 0.9rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #d4af37;
+  color: var(--gold);
   margin-bottom: 0.75rem;
 }
 
@@ -106,13 +103,15 @@
   font-size: clamp(2.3rem, 4vw, 3rem);
   line-height: 1.2;
   margin: 0 0 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
 .hero-subtitle {
   max-width: 34rem;
   margin: 0 auto 2.5rem;
   font-size: 1rem;
-  color: rgba(226, 232, 240, 0.9);
+  color: var(--text-muted);
 }
 
 .prayer-hero {
@@ -123,6 +122,20 @@
   min-height: auto;
   padding-top: 4.5rem;
   padding-bottom: 0;
+}
+
+/* Zakat: room under nav; keep title→form gap modest */
+.hero--compact.hero--zakat {
+  padding-top: calc(6.35rem + env(safe-area-inset-top, 0px));
+}
+
+.hero--zakat .hero-content {
+  padding: 1.1rem 1.5rem 0.65rem;
+}
+
+.hero--zakat .hero-title {
+  margin: 0;
+  font-size: clamp(1.65rem, 4.5vw, 2.25rem);
 }
 
 /* Home (mobile): keep full-viewport background so the page looks uniform,
@@ -162,20 +175,21 @@
   justify-content: space-between;
   padding: 0.45rem 0.9rem;
   border-radius: 999px;
-  background: radial-gradient(circle at top left, rgba(245, 245, 245, 0.2), transparent 60%);
-  background-color: rgba(11, 61, 46, 0.35);
-  border: 1px solid rgba(226, 232, 240, 0.35);
+  background:
+    radial-gradient(circle at top left, rgba(245, 240, 232, 0.12), transparent 60%);
+  background-color: rgba(19, 46, 28, 0.45);
+  border: 0.5px solid var(--gold-border);
   box-shadow: 0 16px 45px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
 
 .nav-logo {
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-size: 0.85rem;
-  color: #f5f5f5;
+  color: var(--text-primary);
 }
 
 .nav-links {
@@ -188,14 +202,12 @@
 }
 
 .nav-links a {
-  color: rgba(226, 232, 240, 0.78);
+  color: var(--text-primary);
   text-decoration: none;
-  transition: color 140ms ease, transform 140ms ease;
 }
 
 .nav-links a:hover {
-  color: #d4af37;
-  transform: translateY(-1px);
+  color: var(--gold);
 }
 
 .lang-toggle {
@@ -203,52 +215,60 @@
   line-height: 1.1;
   padding: 0.25rem 0.55rem;
   border-radius: 999px;
-  border: 1px solid rgba(226, 232, 240, 0.45);
-  background: rgba(11, 61, 46, 0.35);
-  color: #f5f5f5;
+  border: 0.5px solid var(--gold-border);
+  background: var(--gold-subtle);
+  color: var(--gold);
   cursor: pointer;
   -webkit-appearance: none;
   appearance: none;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
+}
+
+.lang-toggle:hover {
+  background: rgba(212, 175, 55, 0.2);
+  border-color: var(--gold-border-hover);
+}
+
+.lang-toggle:active {
+  background: var(--gold);
+  color: var(--bg-page);
+  border-color: var(--gold);
 }
 
 .lang-toggle:focus {
-  outline: 2px solid #20c997;
+  outline: none;
+}
+
+.lang-toggle:focus-visible {
+  outline: 1.5px solid var(--gold);
   outline-offset: 2px;
 }
 
 .hero-cta {
   padding: 0.8rem 1.6rem;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 500;
   border-radius: 999px;
-  border: none;
-  background: radial-gradient(circle at top left, #20c997, #0b3d2e);
-  color: #f5f5f5;
+  border: 0.5px solid var(--gold-border);
+  background: var(--gold-subtle);
+  color: var(--gold);
   cursor: pointer;
-  box-shadow:
-    0 18px 45px rgba(11, 61, 46, 0.6),
-    0 0 0 1px rgba(226, 232, 240, 0.2);
+  box-shadow: none;
   transition:
-    transform 160ms ease,
-    box-shadow 160ms ease,
-    background 160ms ease;
+    border-color 0.2s,
+    background-color 0.2s;
 }
 
 .hero-cta:hover {
-  transform: translateY(-1px);
-  background: radial-gradient(circle at top left, #20c997, #145c42);
-  box-shadow:
-    0 22px 55px rgba(11, 61, 46, 0.75),
-    0 0 0 1px rgba(245, 245, 245, 0.28);
+  background: rgba(212, 175, 55, 0.2);
+  border-color: var(--gold-border-hover);
 }
 
 .hero-cta:active {
-  transform: translateY(0);
-  box-shadow:
-    0 10px 30px rgba(11, 61, 46, 0.6),
-    0 0 0 1px rgba(226, 232, 240, 0.3);
+  background: rgba(212, 175, 55, 0.2);
+  border-color: var(--gold-border);
 }
 
 .cards-section {
@@ -266,13 +286,14 @@
   font-size: 0.8rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(212, 175, 55, 0.88);
+  color: var(--gold);
 }
 
 .cards-title {
   margin: 0;
   font-size: 1.6rem;
-  color: #f5f5f5;
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
 .cards-grid {
@@ -288,35 +309,29 @@
 
 .feature-card {
   padding: 1.75rem 1.5rem;
-  border-radius: 1.1rem;
-  background: linear-gradient(
-    135deg,
-    rgba(245, 245, 245, 0.14),
-    rgba(226, 232, 240, 0.04)
-  );
-  border: 1px solid rgba(226, 232, 240, 0.45);
-  box-shadow:
-    0 16px 45px rgba(5, 18, 14, 0.9),
-    0 0 0 1px rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 0.5px solid var(--gold-border);
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   text-align: left;
   text-decoration: none;
   transition:
-    transform 160ms ease,
-    box-shadow 160ms ease,
-    background 160ms ease;
+    border-color 0.2s,
+    background-color 0.2s;
 }
 
 .feature-card h2 {
   margin: 0;
   font-size: 1.35rem;
-  color: #d4af37;
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
 .feature-card p {
   margin: 0;
-  color: #f5f5f5;
+  color: var(--text-muted);
   font-size: 0.96rem;
 }
 
@@ -335,15 +350,8 @@
 }
 
 .feature-card-link:hover {
-  transform: translateY(-6px) scale(1.02);
-  box-shadow:
-    0 26px 65px rgba(5, 18, 14, 0.95),
-    0 0 0 1px rgba(245, 245, 245, 0.35);
-  background: linear-gradient(
-    135deg,
-    rgba(245, 245, 245, 0.2),
-    rgba(226, 232, 240, 0.08)
-  );
+  background: var(--bg-card-hover);
+  border-color: var(--gold-border-hover);
 }
 
 .prayer-section {
@@ -370,30 +378,36 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.16em;
-  color: rgba(212, 175, 55, 0.9);
+  color: var(--text-muted);
+  font-weight: 500;
 }
 
 .method-select {
   width: 100%;
   padding: 0.5rem 0.75rem;
   border-radius: 0.9rem;
-  border: 1px solid rgba(226, 232, 240, 0.7);
-  background: linear-gradient(
-    135deg,
-    rgba(245, 245, 245, 0.16),
-    rgba(11, 61, 46, 0.55)
-  );
-  box-shadow:
-    0 10px 30px rgba(5, 18, 14, 0.8),
-    0 0 0 1px rgba(15, 23, 42, 0.7);
-  color: #f5f5f5;
+  border: 0.5px solid var(--gold-border);
+  background: var(--bg-card);
+  box-shadow: none;
+  color: var(--text-primary);
   font-size: 0.9rem;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
+}
+
+.method-select:hover {
+  border-color: var(--gold-border-hover);
 }
 
 .method-select:focus {
-  outline: 2px solid #20c997;
+  outline: none;
+}
+
+.method-select:focus-visible {
+  outline: 1.5px solid var(--gold);
   outline-offset: 2px;
 }
 
@@ -401,18 +415,12 @@
   max-width: 960px;
   margin: 0 auto 0.9rem;
   padding: 1.5rem 1.35rem;
-  border-radius: 1.4rem;
-  background: linear-gradient(
-    135deg,
-    rgba(245, 245, 245, 0.12),
-    rgba(226, 232, 240, 0.03)
-  );
-  border: 1px solid rgba(226, 232, 240, 0.4);
-  box-shadow:
-    0 20px 50px rgba(11, 61, 46, 0.85),
-    0 0 0 1px rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
+  border-radius: 14px;
+  background: var(--bg-card) !important;
+  border: 0.5px solid var(--gold-border) !important;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .prayer-summary-header {
@@ -425,14 +433,14 @@
 .prayer-summary-title {
   margin: 0 0 0.3rem;
   font-size: 1.1rem;
-  font-weight: 600;
-  color: #f5f5f5;
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
 .prayer-summary-hijri {
   margin: 0;
   font-size: 0.9rem;
-  color: rgba(226, 232, 240, 0.78);
+  color: var(--text-muted);
 }
 
 .prayer-summary-right {
@@ -445,20 +453,37 @@
 .prayer-summary-next {
   margin: 0;
   font-size: 0.9rem;
-  color: #d4af37;
+  color: var(--gold);
 }
 
 .qibla-button {
   padding: 0.3rem 0.75rem;
   border-radius: 999px;
-  border: 1px solid rgba(226, 232, 240, 0.6);
-  background: rgba(11, 61, 46, 0.55);
-  color: #f5f5f5;
+  border: 0.5px solid var(--gold-border);
+  background: var(--gold-subtle);
+  color: var(--gold);
   font-size: 0.8rem;
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
   cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
+}
+
+.qibla-button:hover {
+  background: rgba(212, 175, 55, 0.2);
+  border-color: var(--gold-border-hover);
+}
+
+.qibla-button:focus {
+  outline: none;
+}
+
+.qibla-button:focus-visible {
+  outline: 1.5px solid var(--gold);
+  outline-offset: 2px;
 }
 
 .qibla-icon {
@@ -509,7 +534,7 @@
 }
 
 .qibla-status-text--muted {
-  color: rgba(226, 232, 240, 0.82);
+  color: var(--text-muted);
 }
 
 .qibla-status-text--error {
@@ -519,20 +544,38 @@
 
 .qibla-retry-button {
   margin-top: 0.9rem;
-  font-weight: 650;
+  font-weight: 400;
   font-size: 0.95rem;
-  background: rgba(245, 245, 245, 0.16);
-  color: #f5f5f5;
-  border: 1px solid rgba(226, 232, 240, 0.45);
+  background: var(--gold-subtle);
+  color: var(--gold);
+  border: 0.5px solid var(--gold-border);
   border-radius: 0.75rem;
   padding: 0.7rem 1.1rem;
   cursor: pointer;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
 }
 
-.qibla-retry-button:active {
-  transform: translateY(1px);
+.qibla-retry-button:hover:not(:disabled) {
+  background: rgba(212, 175, 55, 0.2);
+  border-color: var(--gold-border-hover);
+}
+
+.qibla-retry-button:focus {
+  outline: none;
+}
+
+.qibla-retry-button:focus-visible {
+  outline: 1.5px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.qibla-retry-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .qibla-actions {
@@ -552,45 +595,35 @@
 }
 
 .qibla-accent {
-  color: #28bc8d;
+  color: var(--gold);
 }
 
 .qibla-bearing-title {
   margin: 0.5rem 0 0.1rem;
   font-size: 1.15rem;
-  font-weight: 650;
-  color: #f5f5f5;
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
 .qibla-bearing-from {
-  color: rgba(245, 245, 245, 0.92);
-  font-weight: 450;
+  color: var(--text-muted);
+  font-weight: 400;
 }
 
 .qibla-direction {
   margin: 0.1rem 0 0;
   font-size: 0.98rem;
-  color: #28bc8d;
+  color: var(--gold);
 }
 
 .qibla-location {
   margin: 0.55rem 0 0;
   font-size: 0.93rem;
-  color: #28bc8d;
+  color: var(--gold);
 }
 
 .qibla-coords {
   font-variant-numeric: tabular-nums;
-}
-
-.qibla-footnote {
-  margin: 0.85rem 0 0;
-  font-size: 0.85rem;
-  line-height: 1.45;
-  color: #28bc8d;
-}
-
-.qibla-coords {
   margin-top: 1.1rem;
   display: flex;
   flex-direction: column;
@@ -599,17 +632,24 @@
   text-align: center;
 }
 
+.qibla-footnote {
+  margin: 0.85rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
 .qibla-coords-label {
   font-size: 0.85rem;
-  font-weight: 600;
-  color: #28bc8d;
+  font-weight: 500;
+  color: var(--text-muted);
   letter-spacing: 0.02em;
 }
 
 .qibla-coords-value {
   font-size: 0.95rem;
   font-variant-numeric: tabular-nums;
-  color: #e9fff5;
+  color: var(--text-primary);
 }
 
 .qibla-compass {
@@ -618,13 +658,13 @@
   width: clamp(120px, 42vw, 200px);
   height: clamp(120px, 42vw, 200px);
   border-radius: 50%;
-  background: rgba(245, 245, 245, 0.98);
-  border: 2px solid #28bc8d;
+  background: var(--bg-card);
+  border: 0.5px solid var(--gold-border);
   margin: 0.2rem 0 0.7rem;
   position: relative;
   display: grid;
   place-items: center;
-  box-shadow: 0 2px 10px rgba(40, 188, 141, 0.14);
+  box-shadow: none;
   overflow: hidden;
 }
 
@@ -636,19 +676,19 @@
   transition: transform 0.18s linear;
   will-change: transform;
   background:
-    radial-gradient(circle at center, rgba(40, 188, 141, 0.18), transparent 55%),
+    radial-gradient(circle at center, var(--gold-subtle), transparent 55%),
     repeating-conic-gradient(
       from 0deg,
-      rgba(5, 116, 70, 0.22) 0deg 2deg,
+      rgba(212, 175, 55, 0.18) 0deg 2deg,
       transparent 2deg 15deg
     );
 }
 
 .qibla-compass-label {
   position: absolute;
-  font-weight: 800;
+  font-weight: 500;
   font-size: 0.85rem;
-  color: rgba(5, 116, 70, 0.7);
+  color: var(--text-muted);
   letter-spacing: 0.02em;
   user-select: none;
 }
@@ -666,7 +706,7 @@
   height: 10px;
   border-radius: 999px;
   transform: translate(-50%, -50%);
-  background: rgba(5, 116, 70, 0.3);
+  background: rgba(212, 175, 55, 0.35);
 }
 
 .qibla-mecca-marker {
@@ -689,10 +729,9 @@
   height: 18px;
   border-radius: 50%;
   background: transparent;
-  /* A filled green circle with an offset inner shadow creates a crescent */
   box-shadow:
-    inset -5px -1px 0 0 #28bc8d,
-    0 0 0 3px rgba(40, 188, 141, 0.16),
+    inset -5px -1px 0 0 var(--gold),
+    0 0 0 0.5px var(--gold-border),
     0 6px 14px rgba(5, 18, 14, 0.22);
 }
 
@@ -715,7 +754,11 @@
 .prayer-status {
   margin: 0.5rem 0;
   font-size: 0.9rem;
-  color: rgba(226, 232, 240, 0.85);
+  color: var(--text-muted);
+}
+
+.prayer-status-warning {
+  color: var(--gold);
 }
 
 .prayer-status-error {
@@ -724,18 +767,12 @@
 
 .prayer-row-card {
   padding: 1.2rem 1.1rem 1.1rem;
-  border-radius: 1.1rem;
-  background: linear-gradient(
-    145deg,
-    rgba(245, 245, 245, 0.09),
-    rgba(15, 23, 42, 0.45)
-  );
-  border: 1px solid rgba(226, 232, 240, 0.4);
-  box-shadow:
-    0 14px 38px rgba(5, 18, 14, 0.9),
-    0 0 0 1px rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 0.5px solid var(--gold-border);
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .prayer-row-main {
@@ -748,13 +785,14 @@
 .prayer-name {
   margin: 0 0 0.15rem;
   font-size: 1.05rem;
-  color: #d4af37;
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
 .prayer-time {
   margin: 0;
   font-size: 0.95rem;
-  color: #f5f5f5;
+  color: var(--text-primary);
 }
 
 .prayer-countdown-block {
@@ -766,14 +804,15 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: rgba(226, 232, 240, 0.7);
+  color: var(--text-muted);
+  font-weight: 500;
 }
 
 .prayer-countdown-value {
   margin: 0.1rem 0 0;
   font-size: 0.95rem;
   font-weight: 500;
-  color: #f5f5f5;
+  color: var(--text-primary);
 }
 
 .prayer-row-actions {
@@ -787,15 +826,32 @@
   padding: 0.3rem 0.7rem;
   font-size: 0.85rem;
   border-radius: 999px;
-  border: 1px solid rgba(226, 232, 240, 0.4);
-  background: transparent;
-  color: #f5f5f5;
+  border: 0.5px solid var(--gold-border);
+  background: var(--gold-subtle);
+  color: var(--gold);
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
+}
+
+.prayer-ghost-button:hover:not(:disabled) {
+  background: rgba(212, 175, 55, 0.2);
+  border-color: var(--gold-border-hover);
+}
+
+.prayer-ghost-button:focus {
+  outline: none;
+}
+
+.prayer-ghost-button:focus-visible {
+  outline: 1.5px solid var(--gold);
+  outline-offset: 2px;
 }
 
 .prayer-extra {
   margin: 0.7rem 0 0;
   font-size: 0.85rem;
- 
+  color: var(--text-muted);
 }
 
 @media (max-width: 640px) {
@@ -850,7 +906,7 @@
 
   .hero--home .feature-card {
     padding: 2.15rem 1.85rem;
-    border-radius: 1.2rem;
+    border-radius: 14px;
   }
 
   .hero--home .feature-card h2 {
@@ -877,6 +933,7 @@
   height: 25px;
   max-height: 30px;
   vertical-align: middle;
+  opacity: 0.7;
 }
 
 /* Ramadan banner */
@@ -892,11 +949,13 @@
 
 .ramadan-banner-title {
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
 .ramadan-banner-date {
   font-size: 15px;
+  color: var(--text-muted);
 }
 
 .ramadan-banner-times {
@@ -906,10 +965,12 @@
   flex-wrap: wrap;
   margin-top: 3px;
   margin-bottom: 3px;
+  color: var(--text-muted);
 }
 
 .ramadan-banner-times strong {
-  font-weight: 600;
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
 .ramadan-banner-status {
@@ -921,7 +982,8 @@
 }
 
 .ramadan-banner-status .prayer-status strong {
-  font-weight: 700;
+  font-weight: 500;
+  color: var(--gold);
 }
 
 /* Ramadan extras */
@@ -946,18 +1008,12 @@
   margin-top: 2px;
 }
 
-/* Remove the old prayer-extra style if you want to keep it as fallback */
-.prayer-extra {
-  margin: 0.7rem 0 0;
-  font-size: 0.85rem;
-}
-
 
 /* Zakat Calculator specific styles */
 .zakat-main {
   max-width: 960px; /* Match prayer cards */
   margin: 0 auto;
-  padding: 1.25rem 1.5rem 3rem;
+  padding: 0.35rem 1.5rem 3rem;
   box-sizing: border-box;
 }
 
@@ -973,19 +1029,34 @@
   max-width: 100%;
   margin: 0 auto 0.9rem;
   padding: 1.5rem 1.35rem;
-  border-radius: 1.4rem;
-  background: linear-gradient(
-    135deg,
-    rgba(245, 245, 245, 0.12),
-    rgba(226, 232, 240, 0.03)
-  );
-  border: 1px solid rgba(226, 232, 240, 0.4);
-  box-shadow:
-    0 20px 50px rgba(11, 61, 46, 0.85),
-    0 0 0 1px rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 0.5px solid var(--gold-border);
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   box-sizing: border-box;
+  color: #fff;
+}
+
+.zakat-input-card .prayer-summary-title,
+.zakat-output-card .prayer-summary-title,
+.zakat-input-card .prayer-summary-hijri,
+.zakat-output-card .prayer-summary-hijri,
+.zakat-input-card label.prayer-summary-hijri,
+.zakat-input-card .zakat-radio-label,
+.zakat-output-card .prayer-extra,
+.zakat-output-card .zakat-error-message,
+.zakat-output-card .zakat-not-due-message,
+.zakat-output-card .zakat-due-message,
+.zakat-output-card .zakat-note,
+.zakat-input-card .method-select,
+.zakat-output-card .method-select {
+  color: #fff;
+}
+
+.zakat-input-card .method-select::placeholder {
+  color: rgba(255, 255, 255, 0.45);
 }
 
 /* (intentionally no extra overrides for zakat cards here) */
@@ -1007,8 +1078,10 @@
   margin: 0;
 }
 
-.zakat-table td {
-  padding: 4px 0;
+.zakat-table tbody tr td {
+  padding: 0.5rem 0;
+  border-bottom: 0.5px solid var(--gold-border);
+  vertical-align: middle;
 }
 
 .zakat-table td:last-child {
@@ -1020,33 +1093,50 @@
 }
 
 .zakat-nisab-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px 14px;
   margin-top: 16px;
 }
 
 .zakat-nisab-label {
-  font-weight: 600;
-  margin-right: 8px;
+  flex: 1 1 100%;
+  font-weight: 500;
+  margin-right: 0;
 }
 
 .zakat-radio-label {
-  margin-right: 13px;
+  margin-right: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .zakat-radio-input {
-  margin-right: 4px;
+  margin: 0;
+  accent-color: var(--gold);
 }
 
 .zakat-manual-section {
-  margin-left: 16px;
+  flex: 1 1 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  margin-left: 0;
+  min-width: 0;
 }
 
 .zakat-manual-input {
-  width: 85px;
+  width: 100%;
+  max-width: 16rem;
 }
 
 .zakat-manual-hint {
-  margin-left: 4px;
+  margin-left: 0;
   font-size: 13px;
+  line-height: 1.35;
 }
 
 .zakat-results-title {
@@ -1066,7 +1156,8 @@
 
 .zakat-results-table td:last-child {
   text-align: right;
-  font-weight: 600;
+  font-weight: 500;
+  color: #fff;
 }
 
 .zakat-market-prices {
@@ -1074,11 +1165,11 @@
 }
 
 .zakat-net-assets {
-  font-weight: 700;
+  font-weight: 500;
  }
 
 .zakat-net-assets td:first-child {
-  font-weight: 700;
+  font-weight: 500;
  }
 
 .zakat-result-section {
@@ -1091,12 +1182,12 @@
 
  
 .zakat-due-message {
-   font-weight: 600;
+   font-weight: 500;
 }
 
 .zakat-due-amount {
-  color: #28bc8d;
-  font-weight: 700;
+  color: var(--gold);
+  font-weight: 500;
   font-size: 22px;
 }
 
@@ -1105,17 +1196,80 @@
   margin-top: 5px;
 }
 
-/* Override prayer-summary-hijri when used in zakat context */
-.zakat-table .prayer-summary-hijri,
-.zakat-results-table .prayer-summary-hijri {
-  color: white;
- }
+.zakat-results-table td:not(.prayer-summary-hijri) {
+  color: #fff;
+}
 
 /* Responsive: match prayer-summary-card's responsive behaviors */
 @media (max-width: 640px) {
   .zakat-main {
-    padding: 1.25rem 1.15rem 2.5rem;
+    padding: 0.35rem 1.15rem 2.5rem;
   }
+
+  .zakat-manual-input {
+    max-width: none;
+  }
+}
+
+@media (min-width: 641px) {
+  .zakat-manual-section {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 10px;
+  }
+
+  .zakat-manual-input {
+    width: 7.5rem;
+    max-width: none;
+  }
+
+  .zakat-manual-hint {
+    flex: 1 1 12rem;
+    min-width: 0;
+  }
+}
+
+.feature-card.feature-card-link h2 {
+  color: var(--gold);
+}
+
+.qibla-status-text {
+  color: var(--text-primary);
+}
+
+.prayer-list article h2.prayer-name {
+  font-weight: 500 !important;
+}
+
+.prayer-list article .prayer-time {
+  color: var(--text-primary) !important;
+}
+
+.prayer-extra-ramadan-fajr,
+.prayer-extra-ramadan-maghrib,
+.prayer-extra-ramadan-isha {
+  color: var(--text-muted);
+}
+
+.lang-toggle option,
+.method-select option {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+footer {
+  border-top: 0.5px solid var(--gold-border);
+  background: var(--bg-page);
+  color: var(--text-hint);
+}
+
+footer a {
+  color: rgba(212, 175, 55, 0.4);
+}
+
+footer a:hover {
+  color: var(--gold);
 }
 
 /* 
